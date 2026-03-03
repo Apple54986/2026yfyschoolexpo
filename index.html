@@ -56,14 +56,13 @@
         .level-screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
         .active { display: flex; }
 
-        /* 第一關 Canvas 調整：高度增加 */
         #game-canvas { border: 2px solid var(--energy-red); background: rgba(0,0,0,0.5); max-width: 100%; touch-action: none; height: 400px; }
 
         .timer-bar-bg { width: 80%; height: 10px; background: #222; border-radius: 5px; margin: 10px 0 20px 0; overflow: hidden; }
         #timer-fill { width: 100%; height: 100%; background: var(--energy-red); }
 
         /* 反饋文字 */
-        .feedback { font-size: 1.4rem; font-weight: bold; margin-top: 15px; min-height: 2.5rem; padding: 0 10px; line-height: 1.2; }
+        .feedback { font-size: 1.3rem; font-weight: bold; margin-top: 15px; min-height: 2.5rem; padding: 0 10px; line-height: 1.4; }
         .correct { color: #28a745; }
         .wrong { color: var(--energy-red); }
         .lv-clear { font-size: 2rem; color: var(--bright-orange); text-shadow: 0 0 15px var(--energy-red); animation: pulse 0.5s infinite alternate; }
@@ -83,7 +82,7 @@
         <!-- 進入頁 -->
         <div id="screen-start" class="level-screen active">
             <h1>永豐餘挑戰賽</h1>
-            <p>2分鐘來闖關</p>
+            <p>2分鐘挑戰轉型之王</p>
             <button class="btn-red" onclick="startGame()">[ 立即啟動 ]</button>
         </div>
 
@@ -91,16 +90,15 @@
         <div id="screen-lv1" class="level-screen">
             <h2>第一關：醣源啟動</h2>
             <div class="score-board">剩餘時間: <span id="lv1-timer">10</span>s</div>
-            <p style="margin: 5px 0;">收集<span style="color:var(--energy-red)">紅球(+1)</span>，躲避<span style="color:#888">灰球(-1)</span></p>
             <canvas id="game-canvas"></canvas>
             <div id="lv1-result-display" class="feedback"></div>
-            <p style="font-size: 1.2rem; font-weight: bold;">目前積分: <span id="score1" style="color:var(--energy-red)">0</span> / 10</p>
+            <p style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">目前積分: <span id="score1" style="color:var(--energy-red)">0</span> / 10</p>
         </div>
 
         <!-- 第二關：事業項目 -->
         <div id="screen-lv2" class="level-screen">
-            <h2>第二關：事業項目</h2>
-            <p>這項是永豐餘的事業項目嗎？</p>
+            <h2>第二關：永豐餘事業項目</h2>
+            <p>請問這是永豐餘的事業項目嗎？</p>
             <div class="timer-bar-bg"><div id="timer-fill"></div></div>
             <div id="biz-item-text" class="biz-card">載入中...</div>
             <div class="binary-choice" id="lv2-btns">
@@ -132,9 +130,9 @@
         const GAME_CONFIG = {
             surveyUrl: "https://www.surveycake.com/s/OYYdG",
             binaryQuiz: [
-                { text: "五月花衛生紙", isTrue: true, ansDesc: "恭喜答對囉！" },
-                { text: "只有傳統造紙", isTrue: false, ansDesc: "答錯囉！早已轉型為多元循環經濟" },
-                { text: "永續能源發電", isTrue: true, ansDesc: "恭喜答對囉！" }
+                { text: "五月花衛生紙", isTrue: true, correctAns: "是" },
+                { text: "只有傳統造紙", isTrue: false, correctAns: "不是" },
+                { text: "永續能源發電", isTrue: true, correctAns: "是" }
             ],
             quiz: [
                 {
@@ -144,7 +142,7 @@
                         { text: "核能發電", correct: false },
                         { text: "火力發電", correct: false }
                     ],
-                    ansDesc: "正確答案是：沼氣發電"
+                    correctAns: "沼氣發電"
                 },
                 {
                     question: "永續發展中，最重要的核心是什麼？",
@@ -153,7 +151,7 @@
                         { text: "企業快速成長獲利", correct: false },
                         { text: "循環經濟型與社會責任", correct: true }
                     ],
-                    ansDesc: "正確答案是：循環經濟與社會責任"
+                    correctAns: "循環經濟與社會責任"
                 }
             ]
         };
@@ -178,11 +176,10 @@
             window.location.href = GAME_CONFIG.surveyUrl;
         }
 
-        // --- 第一關：醣源啟動 (優化球速與結算) ---
+        // --- 第一關：醣源啟動 ---
         function initLv1() {
             const canvas = document.getElementById('game-canvas');
             const ctx = canvas.getContext('2d');
-            // 設定畫布寬度與固定高度
             canvas.width = window.innerWidth * 0.9;
             canvas.height = 400; 
             
@@ -213,11 +210,9 @@
             function endLevel1(timer) {
                 clearInterval(timer);
                 isLv1Running = false;
-                
                 const finalScore = Math.max(0, Math.min(lv1Score, 10));
                 totalScore += finalScore;
                 
-                // 顯示結算分數回饋
                 const resultDisplay = document.getElementById('lv1-result-display');
                 resultDisplay.innerHTML = `<span class="lv-clear">第一關得分：${finalScore} 分</span>`;
                 
@@ -226,29 +221,26 @@
                     currentIdx = 0;
                     showScreen('screen-lv2');
                     initLv2();
-                }, 1500); // 停留1.5秒顯示分數
+                }, 1500);
             }
 
             function update() {
                 if(!isLv1Running) return;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // 畫核心
                 ctx.fillStyle = '#FF0000';
                 ctx.fillRect(playerX - 35, canvas.height - 25, 70, 15);
 
-                // 生成頻率微調
                 if(Math.random() < 0.12) {
                     const type = Math.random() > 0.3 ? 'red' : 'gray';
                     items.push({ x: Math.random() * canvas.width, y: 0, type: type });
                 }
 
                 items.forEach((item, index) => {
-                    item.y += 3.2; // 調整球速，讓落下時間更久
+                    item.y += 3.2; 
                     ctx.fillStyle = item.type === 'red' ? '#FF0000' : '#888888';
                     ctx.beginPath(); ctx.arc(item.x, item.y, 12, 0, Math.PI*2); ctx.fill();
 
-                    // 碰撞檢測
                     if(item.y > canvas.height - 40 && Math.abs(item.x - playerX) < 40) {
                         if(item.type === 'red') {
                             lv1Score++;
@@ -257,10 +249,7 @@
                         }
                         document.getElementById('score1').innerText = lv1Score;
                         items.splice(index, 1);
-
-                        if(lv1Score >= 10) {
-                            isLv1Running = false;
-                        }
+                        if(lv1Score >= 10) isLv1Running = false;
                     }
                     if(item.y > canvas.height) items.splice(index, 1);
                 });
@@ -269,7 +258,7 @@
             update();
         }
 
-        // --- 第二關邏輯 ---
+        // --- 第二關：是非題 ---
         function initLv2() {
             if (currentIdx >= GAME_CONFIG.binaryQuiz.length) {
                 currentIdx = 0;
@@ -290,9 +279,7 @@
             timerInterval = setInterval(() => {
                 timeLeft -= 0.1;
                 document.getElementById('timer-fill').style.width = (timeLeft / 3.0 * 100) + '%';
-                if (timeLeft <= 0) {
-                    handleBinary(null); 
-                }
+                if (timeLeft <= 0) handleBinary(null); 
             }, 100);
         }
 
@@ -303,14 +290,14 @@
             const feedbackEl = document.getElementById('lv2-feedback');
 
             if (userChoice === null) {
-                feedbackEl.innerText = "時間到囉！" + q.ansDesc;
+                feedbackEl.innerText = "時間到囉！正確答案是「" + q.correctAns + "」";
                 feedbackEl.className = "feedback wrong";
             } else if (userChoice === q.isTrue) {
                 totalScore++;
-                feedbackEl.innerText = "恭喜答對囉！";
+                feedbackEl.innerText = "恭喜答對~";
                 feedbackEl.className = "feedback correct";
             } else {
-                feedbackEl.innerText = q.ansDesc;
+                feedbackEl.innerText = "答錯囉！正確答案是「" + q.correctAns + "」";
                 feedbackEl.className = "feedback wrong";
             }
 
@@ -320,7 +307,7 @@
             }, 2000);
         }
 
-        // --- 第三關邏輯 ---
+        // --- 第三關：選擇題 ---
         function initLv3() {
             if (currentIdx >= GAME_CONFIG.quiz.length) {
                 document.getElementById('total-score').innerText = totalScore;
@@ -343,10 +330,10 @@
                     const feedbackEl = document.getElementById('lv3-feedback');
                     if(opt.correct) {
                         totalScore++;
-                        feedbackEl.innerText = "恭喜答對囉！";
+                        feedbackEl.innerText = "恭喜答對~";
                         feedbackEl.className = "feedback correct";
                     } else {
-                        feedbackEl.innerText = "答錯囉！" + q.ansDesc;
+                        feedbackEl.innerText = "答錯囉！正確答案是「" + q.correctAns + "」";
                         feedbackEl.className = "feedback wrong";
                     }
                     setTimeout(() => {
