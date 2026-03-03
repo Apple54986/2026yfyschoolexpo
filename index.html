@@ -38,11 +38,11 @@
             align-items: center; justify-content: center;
             height: 100vh; width: 100vw;
             text-align: center;
-            padding: 20px; box-sizing: border-box;
+            padding: 10px; box-sizing: border-box;
         }
 
         h1 { color: var(--energy-red); text-shadow: 0 0 10px rgba(255,0,0,0.7); margin-bottom: 5px; }
-        .score-board { font-size: 1.2rem; color: var(--bright-orange); margin-bottom: 15px; font-weight: bold; }
+        .score-board { font-size: 1.1rem; color: var(--bright-orange); margin-bottom: 10px; font-weight: bold; }
 
         .btn-red {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
@@ -56,16 +56,21 @@
         .level-screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
         .active { display: flex; }
 
-        #game-canvas { border: 2px solid var(--energy-red); background: rgba(0,0,0,0.5); max-width: 100%; touch-action: none; }
+        /* 第一關 Canvas 調整：高度增加 */
+        #game-canvas { border: 2px solid var(--energy-red); background: rgba(0,0,0,0.5); max-width: 100%; touch-action: none; height: 400px; }
 
         .timer-bar-bg { width: 80%; height: 10px; background: #222; border-radius: 5px; margin: 10px 0 20px 0; overflow: hidden; }
         #timer-fill { width: 100%; height: 100%; background: var(--energy-red); }
 
-        .feedback { font-size: 1.4rem; font-weight: bold; margin-top: 15px; min-height: 2rem; padding: 0 10px; }
+        /* 反饋文字 */
+        .feedback { font-size: 1.4rem; font-weight: bold; margin-top: 15px; min-height: 2.5rem; padding: 0 10px; line-height: 1.2; }
         .correct { color: #28a745; }
         .wrong { color: var(--energy-red); }
+        .lv-clear { font-size: 2rem; color: var(--bright-orange); text-shadow: 0 0 15px var(--energy-red); animation: pulse 0.5s infinite alternate; }
 
-        .biz-card { font-size: 1.5rem; font-weight: bold; margin: 20px 0; min-height: 3.5rem; color: white; display: flex; align-items: center; justify-content: center; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        .biz-card { font-size: 1.4rem; font-weight: bold; margin: 15px 0; min-height: 3rem; color: white; display: flex; align-items: center; justify-content: center; }
         .binary-choice { display: flex; gap: 20px; width: 100%; justify-content: center; }
         .choice-container { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 300px; }
     </style>
@@ -86,9 +91,10 @@
         <div id="screen-lv1" class="level-screen">
             <h2>第一關：醣源啟動</h2>
             <div class="score-board">剩餘時間: <span id="lv1-timer">10</span>s</div>
-            <p>收集<span style="color:var(--energy-red)">紅球(+1)</span>，躲避<span style="color:#888">灰球(-1)</span></p>
+            <p style="margin: 5px 0;">收集<span style="color:var(--energy-red)">紅球(+1)</span>，躲避<span style="color:#888">灰球(-1)</span></p>
             <canvas id="game-canvas"></canvas>
-            <p style="font-size: 1.2rem; font-weight: bold; margin-top: 10px;">目前積分: <span id="score1" style="color:var(--energy-red)">0</span> / 10</p>
+            <div id="lv1-result-display" class="feedback"></div>
+            <p style="font-size: 1.2rem; font-weight: bold;">目前積分: <span id="score1" style="color:var(--energy-red)">0</span> / 10</p>
         </div>
 
         <!-- 第二關：事業項目 -->
@@ -107,7 +113,7 @@
         <!-- 第三關：AI 決策選擇題 -->
         <div id="screen-lv3" class="level-screen">
             <h2>第三關：快問快答</h2>
-            <div id="quiz-question" class="biz-card" style="font-size:1.2rem;">讀取中...</div>
+            <div id="quiz-question" class="biz-card" style="font-size:1.1rem; padding: 0 10px;">讀取中...</div>
             <div class="choice-container" id="quiz-options"></div>
             <div id="lv3-feedback" class="feedback"></div>
         </div>
@@ -172,12 +178,14 @@
             window.location.href = GAME_CONFIG.surveyUrl;
         }
 
-        // --- 第一關：醣源啟動 (修正版) ---
+        // --- 第一關：醣源啟動 (優化球速與結算) ---
         function initLv1() {
             const canvas = document.getElementById('game-canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth * 0.85;
-            canvas.height = 300;
+            // 設定畫布寬度與固定高度
+            canvas.width = window.innerWidth * 0.9;
+            canvas.height = 400; 
+            
             let playerX = canvas.width / 2;
             let items = [];
             let timeLeft = 10;
@@ -194,7 +202,6 @@
             canvas.addEventListener('touchmove', moveHandler);
             canvas.addEventListener('mousemove', moveHandler);
 
-            // 第一關計時器
             const lv1Timer = setInterval(() => {
                 timeLeft--;
                 document.getElementById('lv1-timer').innerText = timeLeft;
@@ -206,35 +213,43 @@
             function endLevel1(timer) {
                 clearInterval(timer);
                 isLv1Running = false;
-                totalScore += Math.max(0, Math.min(lv1Score, 10)); // 累加至總分
+                
+                const finalScore = Math.max(0, Math.min(lv1Score, 10));
+                totalScore += finalScore;
+                
+                // 顯示結算分數回饋
+                const resultDisplay = document.getElementById('lv1-result-display');
+                resultDisplay.innerHTML = `<span class="lv-clear">第一關得分：${finalScore} 分</span>`;
+                
                 setTimeout(() => {
+                    resultDisplay.innerHTML = "";
                     currentIdx = 0;
                     showScreen('screen-lv2');
                     initLv2();
-                }, 800);
+                }, 1500); // 停留1.5秒顯示分數
             }
 
             function update() {
                 if(!isLv1Running) return;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // 畫玩家 (核心)
+                // 畫核心
                 ctx.fillStyle = '#FF0000';
-                ctx.fillRect(playerX - 30, canvas.height - 20, 60, 10);
+                ctx.fillRect(playerX - 35, canvas.height - 25, 70, 15);
 
-                // 隨機生成紅球與灰球
-                if(Math.random() < 0.1) {
+                // 生成頻率微調
+                if(Math.random() < 0.12) {
                     const type = Math.random() > 0.3 ? 'red' : 'gray';
                     items.push({ x: Math.random() * canvas.width, y: 0, type: type });
                 }
 
                 items.forEach((item, index) => {
-                    item.y += 5;
+                    item.y += 3.2; // 調整球速，讓落下時間更久
                     ctx.fillStyle = item.type === 'red' ? '#FF0000' : '#888888';
-                    ctx.beginPath(); ctx.arc(item.x, item.y, 10, 0, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(item.x, item.y, 12, 0, Math.PI*2); ctx.fill();
 
                     // 碰撞檢測
-                    if(item.y > canvas.height - 30 && Math.abs(item.x - playerX) < 35) {
+                    if(item.y > canvas.height - 40 && Math.abs(item.x - playerX) < 40) {
                         if(item.type === 'red') {
                             lv1Score++;
                         } else {
@@ -243,7 +258,6 @@
                         document.getElementById('score1').innerText = lv1Score;
                         items.splice(index, 1);
 
-                        // 提早結束檢查
                         if(lv1Score >= 10) {
                             isLv1Running = false;
                         }
@@ -255,7 +269,7 @@
             update();
         }
 
-        // --- 第二關：事業項目 (是非題) ---
+        // --- 第二關邏輯 ---
         function initLv2() {
             if (currentIdx >= GAME_CONFIG.binaryQuiz.length) {
                 currentIdx = 0;
@@ -293,7 +307,7 @@
                 feedbackEl.className = "feedback wrong";
             } else if (userChoice === q.isTrue) {
                 totalScore++;
-                feedbackEl.innerText = "+1 分！恭喜答對囉！";
+                feedbackEl.innerText = "恭喜答對囉！";
                 feedbackEl.className = "feedback correct";
             } else {
                 feedbackEl.innerText = q.ansDesc;
@@ -306,7 +320,7 @@
             }, 2000);
         }
 
-        // --- 第三關：快問快答 (選擇題) ---
+        // --- 第三關邏輯 ---
         function initLv3() {
             if (currentIdx >= GAME_CONFIG.quiz.length) {
                 document.getElementById('total-score').innerText = totalScore;
@@ -329,7 +343,7 @@
                     const feedbackEl = document.getElementById('lv3-feedback');
                     if(opt.correct) {
                         totalScore++;
-                        feedbackEl.innerText = "+1 分！恭喜答對囉！";
+                        feedbackEl.innerText = "恭喜答對囉！";
                         feedbackEl.className = "feedback correct";
                     } else {
                         feedbackEl.innerText = "答錯囉！" + q.ansDesc;
