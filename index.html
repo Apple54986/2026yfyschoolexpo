@@ -22,10 +22,9 @@
             color: var(--white);
             overflow: hidden;
             user-select: none;
-            touch-action: manipulation; /* 優化移動端點擊 */
+            touch-action: manipulation;
         }
 
-        /* 背景流體動畫效果 */
         .bg-glow {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -34,7 +33,6 @@
             opacity: 0.6;
         }
 
-        /* 遊戲容器 */
         #game-container {
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
@@ -43,18 +41,16 @@
             padding: 20px; box-sizing: border-box;
         }
 
-        /* 標題與文字 */
         h1 { color: var(--energy-red); text-shadow: 0 0 10px rgba(255,0,0,0.7); margin-bottom: 10px; }
         p { font-size: 1.1rem; line-height: 1.5; margin-bottom: 20px; }
 
-        /* 按鈕設計 */
         .btn-action {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
             color: white; border: none;
             padding: 15px 40px; font-size: 1.2rem; font-weight: bold;
             border-radius: 50px; cursor: pointer;
             box-shadow: 0 0 15px var(--energy-red);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
             animation: breathe 2s infinite;
             text-decoration: none;
             display: inline-block;
@@ -65,18 +61,20 @@
             100% { box-shadow: 0 0 5px var(--energy-red); }
         }
 
-        /* 關卡顯示區 */
         .level-screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
         .active { display: flex; }
 
-        /* 第一關：掉落物遊戲區 */
         #game-canvas { border: 2px solid var(--energy-red); background: rgba(0,0,0,0.5); max-width: 100%; }
 
-        /* 第二關：能量條 */
-        .energy-bar-bg { width: 80%; height: 30px; background: #222; border-radius: 15px; overflow: hidden; margin: 20px 0; border: 1px solid var(--tech-gray); }
-        #energy-fill { width: 0%; height: 100%; background: var(--energy-red); box-shadow: 0 0 10px var(--energy-red); transition: width 0.1s; }
+        /* 第二關是非題樣式 */
+        .timer-bar-bg { width: 80%; height: 10px; background: #222; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
+        #timer-fill { width: 100%; height: 100%; background: var(--energy-red); transition: width 0.1s linear; }
+        .biz-card { font-size: 1.8rem; font-weight: bold; color: var(--bright-orange); margin: 20px 0; min-height: 2.5rem; }
+        .binary-choice { display: flex; gap: 20px; width: 100%; justify-content: center; }
+        .btn-yes { background: #28a745; color: white; border: none; padding: 15px 40px; border-radius: 10px; font-size: 1.2rem; font-weight: bold; }
+        .btn-no { background: #dc3545; color: white; border: none; padding: 15px 40px; border-radius: 10px; font-size: 1.2rem; font-weight: bold; }
 
-        /* 第三關：決策按鈕 */
+        /* 第三關問答樣式 */
         .choice-container { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; }
         .choice-btn { background: var(--tech-gray); border: 1px solid var(--energy-red); color: white; padding: 15px; border-radius: 10px; font-size: 1rem; cursor: pointer; }
         .choice-btn:active { background: var(--energy-red); }
@@ -102,12 +100,17 @@
             <p>分數: <span id="score1">0</span> / 10</p>
         </div>
 
-        <!-- 第二關：紅能發電 -->
+        <!-- 第二關：事業辨識 (是非題) -->
         <div id="screen-lv2" class="level-screen">
-            <h2>第二關：紅能發電</h2>
-            <p>快速點擊按鈕產生紅色脈衝！</p>
-            <div class="energy-bar-bg"><div id="energy-fill"></div></div>
-            <button class="btn-action" style="animation:none; width:120px; height:120px; border-radius:60px;" onclick="chargeEnergy()">PUSH</button>
+            <h2>第二關：事業辨識</h2>
+            <p>永豐餘旗下有做這些嗎？(限時3秒)</p>
+            <div class="timer-bar-bg"><div id="timer-fill"></div></div>
+            <div id="biz-item-text" class="biz-card">載入中...</div>
+            <div class="binary-choice">
+                <button class="btn-yes" onclick="handleBinary(true)">是</button>
+                <button class="btn-no" onclick="handleBinary(false)">不是</button>
+            </div>
+            <p style="margin-top:20px">進度: <span id="lv2-progress">0</span> / 3</p>
         </div>
 
         <!-- 第三關：AI 紅色大腦 -->
@@ -133,12 +136,19 @@
         const GAME_CONFIG = {
             intro: "2分鐘挑戰 AI 永續之王。",
             surveyUrl: "https://www.surveycake.com/s/OYYdG",
+            // 第二關是非題設定
+            binaryQuiz: [
+                { text: "五月花衛生紙", isTrue: true },
+                { text: "只有傳統造紙", isTrue: false },
+                { text: "永續能源發電", isTrue: true }
+            ],
+            // 第三關問答設定
             quiz: [
                 {
                     question: "永豐餘綠色發電，請問是以下何者？",
                     options: [
                         { text: "沼氣發電", correct: true },
-                        { text: "水力發電", correct: false }, 
+                        { text: "水力發電", correct: false },
                         { text: "風力發電", correct: false }
                     ]
                 },
@@ -152,7 +162,10 @@
             ]
         };
 
-        let energy = 0;
+        let currentBizIdx = 0;
+        let lv2Score = 0;
+        let timerInterval;
+        let timeLeft = 3.0;
         let currentQuizIdx = 0;
         let isGameRunning = false;
 
@@ -180,10 +193,9 @@
             canvas.height = 300;
             let playerX = canvas.width / 2;
             let items = [];
-            let lv1Score = 0;
+            let score1 = 0;
             isGameRunning = true;
 
-            // 支援滑鼠與觸控
             const moveHandler = (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -195,8 +207,6 @@
             function update() {
                 if(!isGameRunning) return;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // 畫玩家
                 ctx.fillStyle = '#FF0000';
                 ctx.fillRect(playerX - 25, canvas.height - 20, 50, 10);
 
@@ -207,23 +217,22 @@
                 items.forEach((item, index) => {
                     item.y += 4;
                     ctx.fillStyle = item.type === 'red' ? '#FF0000' : '#666';
-                    ctx.beginPath();
-                    ctx.arc(item.x, item.y, 10, 0, Math.PI*2);
-                    ctx.fill();
+                    ctx.beginPath(); ctx.arc(item.x, item.y, 10, 0, Math.PI*2); ctx.fill();
 
                     if(item.y > canvas.height - 25 && Math.abs(item.x - playerX) < 30) {
                         if(item.type === 'red') {
-                            lv1Score++;
-                            document.getElementById('score1').innerText = lv1Score;
+                            score1++;
+                            document.getElementById('score1').innerText = score1;
                         }
                         items.splice(index, 1);
                     }
                     if(item.y > canvas.height) items.splice(index, 1);
                 });
 
-                if(lv1Score >= 10) {
+                if(score1 >= 10) {
                     isGameRunning = false;
                     showScreen('screen-lv2');
+                    initLv2();
                 } else {
                     requestAnimationFrame(update);
                 }
@@ -231,17 +240,47 @@
             update();
         }
 
-        // --- 第二關邏輯 ---
-        function chargeEnergy() {
-            energy += 10;
-            if(energy > 100) energy = 100;
-            document.getElementById('energy-fill').style.width = energy + '%';
-            if(energy >= 100) {
-                setTimeout(() => {
-                    showScreen('screen-lv3');
-                    initLv3();
-                }, 300);
+        // --- 第二關邏輯 (是非題) ---
+        function initLv2() {
+            if (currentBizIdx >= GAME_CONFIG.binaryQuiz.length) {
+                showScreen('screen-lv3');
+                initLv3();
+                return;
             }
+            
+            timeLeft = 3.0;
+            document.getElementById('lv2-progress').innerText = currentBizIdx;
+            document.getElementById('biz-item-text').innerText = GAME_CONFIG.binaryQuiz[currentBizIdx].text;
+            document.getElementById('timer-fill').style.width = '100%';
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                document.getElementById('timer-fill').style.width = (timeLeft / 3.0 * 100) + '%';
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("超時了！再試一次。");
+                    resetLv2();
+                }
+            }, 100);
+        }
+
+        function handleBinary(userChoice) {
+            clearInterval(timerInterval);
+            const correctAnswer = GAME_CONFIG.binaryQuiz[currentBizIdx].isTrue;
+            
+            if (userChoice === correctAnswer) {
+                currentBizIdx++;
+                initLv2();
+            } else {
+                alert("答錯囉！重新挑戰這一關。");
+                resetLv2();
+            }
+        }
+
+        function resetLv2() {
+            currentBizIdx = 0;
+            initLv2();
         }
 
         // --- 第三關邏輯 ---
