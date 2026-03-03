@@ -22,7 +22,7 @@
             color: var(--white);
             overflow: hidden;
             user-select: none;
-            touch-action: manipulation;
+            touch-action: none; /* 全域禁止縮放與手勢以提升遊戲反應 */
         }
 
         .bg-glow {
@@ -41,35 +41,52 @@
             padding: 10px; box-sizing: border-box;
         }
 
-        h1 { color: var(--energy-red); text-shadow: 0 0 10px rgba(255,0,0,0.7); margin-bottom: 5px; }
+        h1 { color: var(--energy-red); text-shadow: 0 0 15px rgba(255,0,0,0.8); margin-bottom: 5px; font-size: 1.8rem; }
         .score-board { font-size: 1.1rem; color: var(--bright-orange); margin-bottom: 10px; font-weight: bold; }
 
         .btn-red {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
             color: white; border: 1px solid rgba(255,255,255,0.3);
-            padding: 15px 30px; font-size: 1.2rem; font-weight: bold;
-            border-radius: 10px; cursor: pointer;
-            box-shadow: 0 0 10px rgba(255,0,0,0.5);
+            padding: 15px 35px; font-size: 1.2rem; font-weight: bold;
+            border-radius: 12px; cursor: pointer;
+            box-shadow: 0 0 15px rgba(255,0,0,0.4);
+            transition: transform 0.1s;
             text-decoration: none; display: inline-block;
         }
+        .btn-red:active { transform: scale(0.95); }
 
-        .level-screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
+        .level-screen { 
+            display: none; width: 100%; height: 100%; 
+            flex-direction: column; align-items: center; justify-content: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .active { display: flex; }
 
-        #game-canvas { border: 2px solid var(--energy-red); background: rgba(0,0,0,0.5); max-width: 100%; touch-action: none; height: 400px; }
+        #game-canvas { 
+            border: 2px solid var(--energy-red); 
+            background: rgba(0,0,0,0.6); 
+            max-width: 95%; 
+            height: 420px; 
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255,0,0,0.2);
+        }
 
-        .timer-bar-bg { width: 80%; height: 10px; background: #222; border-radius: 5px; margin: 10px 0 20px 0; overflow: hidden; }
-        #timer-fill { width: 100%; height: 100%; background: var(--energy-red); }
+        .timer-bar-bg { width: 85%; height: 12px; background: #222; border-radius: 6px; margin: 15px 0 25px 0; overflow: hidden; border: 1px solid var(--tech-gray); }
+        #timer-fill { width: 100%; height: 100%; background: var(--energy-red); box-shadow: 0 0 10px var(--energy-red); }
 
-        /* 反饋文字 */
-        .feedback { font-size: 1.3rem; font-weight: bold; margin-top: 15px; min-height: 2.5rem; padding: 0 10px; line-height: 1.4; }
-        .correct { color: #28a745; }
-        .wrong { color: var(--energy-red); }
-        .lv-clear { font-size: 2rem; color: var(--bright-orange); text-shadow: 0 0 15px var(--energy-red); animation: pulse 0.5s infinite alternate; }
+        .feedback { font-size: 1.3rem; font-weight: bold; margin-top: 15px; min-height: 3rem; padding: 0 15px; line-height: 1.4; transition: all 0.2s; }
+        .correct { color: #28a745; text-shadow: 0 0 10px rgba(40,167,69,0.5); }
+        .wrong { color: var(--energy-red); text-shadow: 0 0 10px rgba(255,0,0,0.5); }
+        
+        .lv-clear-pop { 
+            font-size: 2.2rem; color: var(--bright-orange); 
+            text-shadow: 0 0 20px var(--energy-red); 
+            animation: scorePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        @keyframes scorePop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
-
-        .biz-card { font-size: 1.4rem; font-weight: bold; margin: 15px 0; min-height: 3rem; color: white; display: flex; align-items: center; justify-content: center; }
+        .biz-card { font-size: 1.5rem; font-weight: bold; margin: 20px 0; min-height: 3.5rem; color: white; display: flex; align-items: center; justify-content: center; }
         .binary-choice { display: flex; gap: 20px; width: 100%; justify-content: center; }
         .choice-container { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 300px; }
     </style>
@@ -82,23 +99,24 @@
         <!-- 進入頁 -->
         <div id="screen-start" class="level-screen active">
             <h1>永豐餘挑戰賽</h1>
-            <p>2分鐘挑戰</p>
+            <p style="letter-spacing: 2px;">2分鐘挑戰</p>
+            <br>
             <button class="btn-red" onclick="startGame()">[ 立即啟動 ]</button>
         </div>
 
         <!-- 第一關：10秒捕獲 -->
         <div id="screen-lv1" class="level-screen">
-            <h2>第一關：醣源啟動</h2>
+            <h2 style="margin-bottom: 5px;">第一關：醣源啟動</h2>
             <div class="score-board">剩餘時間: <span id="lv1-timer">10</span>s</div>
             <canvas id="game-canvas"></canvas>
             <div id="lv1-result-display" class="feedback"></div>
-            <p style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">目前積分: <span id="score1" style="color:var(--energy-red)">0</span> / 10</p>
+            <!-- 原本此處的目前積分/10已移除，保持畫面乾淨 -->
         </div>
 
         <!-- 第二關：事業項目 -->
         <div id="screen-lv2" class="level-screen">
-            <h2>第二關：永豐餘事業項目</h2>
-            <p>請問這是永豐餘的事業項目嗎？</p>
+            <h2>第二關：事業項目</h2>
+            <p>這項是永豐餘的事業項目嗎？</p>
             <div class="timer-bar-bg"><div id="timer-fill"></div></div>
             <div id="biz-item-text" class="biz-card">載入中...</div>
             <div class="binary-choice" id="lv2-btns">
@@ -108,10 +126,10 @@
             <div id="lv2-feedback" class="feedback"></div>
         </div>
 
-        <!-- 第三關：AI 決策選擇題 -->
+        <!-- 第三關：快問快答 -->
         <div id="screen-lv3" class="level-screen">
             <h2>第三關：快問快答</h2>
-            <div id="quiz-question" class="biz-card" style="font-size:1.1rem; padding: 0 10px;">讀取中...</div>
+            <div id="quiz-question" class="biz-card" style="font-size:1.15rem; padding: 0 15px;">讀取中...</div>
             <div class="choice-container" id="quiz-options"></div>
             <div id="lv3-feedback" class="feedback"></div>
         </div>
@@ -119,8 +137,9 @@
         <!-- 結束頁 -->
         <div id="screen-result" class="level-screen">
             <h1 style="color:var(--bright-orange)">MISSION COMPLETE</h1>
-            <div style="font-size: 2rem; margin: 20px 0;">最終總分：<span id="total-score" style="color:var(--energy-red)">0</span></div>
+            <div style="font-size: 2.2rem; margin: 25px 0; font-weight: 800;">最終總分：<span id="total-score" style="color:var(--energy-red)">0</span></div>
             <p id="ui-result-text">感謝參與！點擊下方填寫問卷領取獎勵。</p>
+            <br>
             <button class="btn-red" onclick="goToSurvey()">[ 填寫問卷領取獎勵 ]</button>
         </div>
 
@@ -149,7 +168,7 @@
                     options: [
                         { text: "持續增加碳排放", correct: false },
                         { text: "企業快速成長獲利", correct: false },
-                        { text: "循環經濟型與社會責任", correct: true }
+                        { text: "循環經濟與社會責任", correct: true }
                     ],
                     correctAns: "循環經濟與社會責任"
                 }
@@ -176,28 +195,35 @@
             window.location.href = GAME_CONFIG.surveyUrl;
         }
 
-        // --- 第一關：醣源啟動 ---
+        // --- 第一關：醣源啟動 (優化版) ---
         function initLv1() {
             const canvas = document.getElementById('game-canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth * 0.9;
-            canvas.height = 400; 
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
             
-            let playerX = canvas.width / 2;
+            canvas.width = rect.width * dpr;
+            canvas.height = 420 * dpr;
+            ctx.scale(dpr, dpr);
+            
+            const logicalWidth = rect.width;
+            const logicalHeight = 420;
+            
+            let playerX = logicalWidth / 2;
+            let targetX = playerX;
             let items = [];
             let timeLeft = 10;
+            let pulseTime = 0;
             isLv1Running = true;
             lv1Score = 0;
 
-            const moveHandler = (e) => {
-                const rect = canvas.getBoundingClientRect();
+            // 提升觸控流暢度
+            const updatePos = (e) => {
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                playerX = clientX - rect.left;
-                if (playerX < 30) playerX = 30;
-                if (playerX > canvas.width - 30) playerX = canvas.width - 30;
+                targetX = clientX - canvas.getBoundingClientRect().left;
             };
-            canvas.addEventListener('touchmove', moveHandler);
-            canvas.addEventListener('mousemove', moveHandler);
+            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); updatePos(e); }, {passive: false});
+            canvas.addEventListener('mousemove', updatePos);
 
             const lv1Timer = setInterval(() => {
                 timeLeft--;
@@ -214,51 +240,65 @@
                 totalScore += finalScore;
                 
                 const resultDisplay = document.getElementById('lv1-result-display');
-                resultDisplay.innerHTML = `<span class="lv-clear">第一關得分：${finalScore} 分</span>`;
+                resultDisplay.innerHTML = `<span class="lv-clear-pop">第一關得分：${finalScore} 分</span>`;
                 
                 setTimeout(() => {
                     resultDisplay.innerHTML = "";
                     currentIdx = 0;
                     showScreen('screen-lv2');
                     initLv2();
-                }, 1500);
+                }, 1800);
             }
 
             function update() {
                 if(!isLv1Running) return;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, logicalWidth, logicalHeight);
                 
-                ctx.fillStyle = '#FF0000';
-                ctx.fillRect(playerX - 35, canvas.height - 25, 70, 15);
+                // 緩動插值讓移動更順滑
+                playerX += (targetX - playerX) * 0.25;
+                if (playerX < 35) playerX = 35;
+                if (playerX > logicalWidth - 35) playerX = logicalWidth - 35;
 
-                if(Math.random() < 0.12) {
-                    const type = Math.random() > 0.3 ? 'red' : 'gray';
-                    items.push({ x: Math.random() * canvas.width, y: 0, type: type });
+                // 畫玩家 (帶發光效果)
+                ctx.shadowBlur = pulseTime > 0 ? 20 : 5;
+                ctx.shadowColor = 'red';
+                ctx.fillStyle = pulseTime > 0 ? '#FF5555' : '#FF0000';
+                ctx.fillRect(playerX - 35, logicalHeight - 30, 70, 15);
+                ctx.shadowBlur = 0;
+                if(pulseTime > 0) pulseTime--;
+
+                // 球體生成
+                if(Math.random() < 0.13) {
+                    const type = Math.random() > 0.35 ? 'red' : 'gray';
+                    items.push({ x: Math.random() * logicalWidth, y: -20, type: type });
                 }
 
                 items.forEach((item, index) => {
-                    item.y += 3.2; 
+                    item.y += 3.5; 
                     ctx.fillStyle = item.type === 'red' ? '#FF0000' : '#888888';
-                    ctx.beginPath(); ctx.arc(item.x, item.y, 12, 0, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); 
+                    ctx.arc(item.x, item.y, 13, 0, Math.PI*2); 
+                    ctx.fill();
 
-                    if(item.y > canvas.height - 40 && Math.abs(item.x - playerX) < 40) {
+                    // 碰撞
+                    if(item.y > logicalHeight - 45 && Math.abs(item.x - playerX) < 45) {
                         if(item.type === 'red') {
                             lv1Score++;
+                            pulseTime = 5; // 接到紅球時核心閃爍
                         } else {
                             lv1Score = Math.max(0, lv1Score - 1);
                         }
-                        document.getElementById('score1').innerText = lv1Score;
                         items.splice(index, 1);
                         if(lv1Score >= 10) isLv1Running = false;
                     }
-                    if(item.y > canvas.height) items.splice(index, 1);
+                    if(item.y > logicalHeight) items.splice(index, 1);
                 });
                 requestAnimationFrame(update);
             }
             update();
         }
 
-        // --- 第二關：是非題 ---
+        // --- 第二關：是非題 (4秒版) ---
         function initLv2() {
             if (currentIdx >= GAME_CONFIG.binaryQuiz.length) {
                 currentIdx = 0;
@@ -272,15 +312,15 @@
             document.getElementById('lv2-feedback').innerText = "";
             document.getElementById('lv2-btns').style.pointerEvents = "auto";
             
-            let timeLeft = 3.0;
+            let timeLeft = 4.0; // 延長至4秒
             document.getElementById('timer-fill').style.width = '100%';
             
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
-                timeLeft -= 0.1;
-                document.getElementById('timer-fill').style.width = (timeLeft / 3.0 * 100) + '%';
+                timeLeft -= 0.05;
+                document.getElementById('timer-fill').style.width = (timeLeft / 4.0 * 100) + '%';
                 if (timeLeft <= 0) handleBinary(null); 
-            }, 100);
+            }, 5000/100); // 平滑進度條
         }
 
         function handleBinary(userChoice) {
@@ -290,21 +330,21 @@
             const feedbackEl = document.getElementById('lv2-feedback');
 
             if (userChoice === null) {
-                feedbackEl.innerText = "時間到囉！正確答案是「" + q.correctAns + "」";
+                feedbackEl.innerText = "時間到囉！答案是「" + q.correctAns + "」";
                 feedbackEl.className = "feedback wrong";
             } else if (userChoice === q.isTrue) {
                 totalScore++;
                 feedbackEl.innerText = "恭喜答對~";
                 feedbackEl.className = "feedback correct";
             } else {
-                feedbackEl.innerText = "答錯囉！正確答案是「" + q.correctAns + "」";
+                feedbackEl.innerText = "答錯囉！答案是「" + q.correctAns + "」";
                 feedbackEl.className = "feedback wrong";
             }
 
             setTimeout(() => {
                 currentIdx++;
                 initLv2();
-            }, 2000);
+            }, 1800);
         }
 
         // --- 第三關：選擇題 ---
@@ -333,14 +373,14 @@
                         feedbackEl.innerText = "恭喜答對~";
                         feedbackEl.className = "feedback correct";
                     } else {
-                        feedbackEl.innerText = "答錯囉！正確答案是「" + q.correctAns + "」";
+                        feedbackEl.innerText = "答錯囉！答案是「" + q.correctAns + "」";
                         feedbackEl.className = "feedback wrong";
                     }
                     setTimeout(() => {
                         currentIdx++;
                         initLv3();
                         container.style.pointerEvents = "auto";
-                    }, 2000);
+                    }, 1800);
                 };
                 container.appendChild(btn);
             });
