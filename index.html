@@ -22,6 +22,7 @@
             color: var(--white);
             overflow: hidden;
             user-select: none;
+            touch-action: manipulation; /* 優化移動端點擊 */
         }
 
         /* 背景流體動畫效果 */
@@ -55,6 +56,8 @@
             box-shadow: 0 0 15px var(--energy-red);
             transition: transform 0.2s, box-shadow 0.2s;
             animation: breathe 2s infinite;
+            text-decoration: none;
+            display: inline-block;
         }
         @keyframes breathe {
             0% { box-shadow: 0 0 5px var(--energy-red); }
@@ -66,8 +69,8 @@
         .level-screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
         .active { display: flex; }
 
-        /* 第一關：掉落物遊戲區碼 */
-        #game-canvas { border: 2px solid var(--energy-red); background: rgba(0,0,0,0.5); }
+        /* 第一關：掉落物遊戲區 */
+        #game-canvas { border: 2px solid var(--energy-red); background: rgba(0,0,0,0.5); max-width: 100%; }
 
         /* 第二關：能量條 */
         .energy-bar-bg { width: 80%; height: 30px; background: #222; border-radius: 15px; overflow: hidden; margin: 20px 0; border: 1px solid var(--tech-gray); }
@@ -75,11 +78,8 @@
 
         /* 第三關：決策按鈕 */
         .choice-container { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; }
-        .choice-btn { background: var(--tech-gray); border: 1px solid var(--energy-red); color: white; padding: 15px; border-radius: 10px; }
+        .choice-btn { background: var(--tech-gray); border: 1px solid var(--energy-red); color: white; padding: 15px; border-radius: 10px; font-size: 1rem; cursor: pointer; }
         .choice-btn:active { background: var(--energy-red); }
-
-        /* 粒子效果容器 */
-        #particles { position: absolute; top: 0; left: 0; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -90,14 +90,14 @@
         <!-- 進入頁 -->
         <div id="screen-start" class="level-screen active">
             <h1 id="ui-title">RED TECH</h1>
-            <p id="ui-intro">點燃你的轉型熱血！<br>挑戰 AI 永續之王。</p>
+            <p id="ui-intro">載入中...</p>
             <button class="btn-action" onclick="startGame()">[ 立即啟動未來 ]</button>
         </div>
 
         <!-- 第一關：醣源啟動 -->
         <div id="screen-lv1" class="level-screen">
             <h2>第一關：醣源啟動</h2>
-            <p>移動核心收集 <span style="color:var(--energy-red)">紅色醣分子</span></p>
+            <p>移動底端核心收集 <span style="color:var(--energy-red)">紅色醣分子</span></p>
             <canvas id="game-canvas"></canvas>
             <p>分數: <span id="score1">0</span> / 10</p>
         </div>
@@ -105,7 +105,7 @@
         <!-- 第二關：紅能發電 -->
         <div id="screen-lv2" class="level-screen">
             <h2>第二關：紅能發電</h2>
-            <p>快速點擊產生紅色脈衝！</p>
+            <p>快速點擊按鈕產生紅色脈衝！</p>
             <div class="energy-bar-bg"><div id="energy-fill"></div></div>
             <button class="btn-action" style="animation:none; width:120px; height:120px; border-radius:60px;" onclick="chargeEnergy()">PUSH</button>
         </div>
@@ -114,40 +114,36 @@
         <div id="screen-lv3" class="level-screen">
             <h2>第三關：AI 紅色決策</h2>
             <p id="quiz-question">讀取中...</p>
-            <div class="choice-container" id="quiz-options">
-                <!-- 動態生成按鈕 -->
-            </div>
+            <div class="choice-container" id="quiz-options"></div>
         </div>
 
         <!-- 結束頁 -->
         <div id="screen-result" class="level-screen">
             <h1 style="color:var(--bright-orange)">MISSION COMPLETE</h1>
             <p id="ui-result-text">你的轉型能量值破表！<br>獲得『紅色先鋒』稱號。</p>
-            <button class="btn-action" onclick="location.reload()">重新挑戰</button>
+            <button class="btn-action" onclick="goToSurvey()">[ 填寫問卷領取獎勵 ]</button>
         </div>
 
     </div>
 
     <script>
         /************************************************
-         * 可編輯區域：自定義題目與設定
+         * 設定區
          ************************************************/
         const GAME_CONFIG = {
-            title: "點燃你的轉型熱血！",
             intro: "2分鐘挑戰 AI 永續之王。",
-            winTitle: "紅色先鋒",
-            // 第三關：題目設定
+            surveyUrl: "https://www.surveycake.com/s/OYYdG",
             quiz: [
                 {
                     question: "永豐餘綠色發電，請問是以下何者？",
                     options: [
                         { text: "沼氣發電", correct: true },
-                        { text: "水力發電", correct: false }
+                        { text: "水力發電", correct: false }, 
                         { text: "風力發電", correct: false }
                     ]
                 },
                 {
-                    question: "ESG永續發展中，最重要的核心是什麼？",
+                    question: "ESG 永續發展中，最重要的核心是什麼？",
                     options: [
                         { text: "持續獲利", correct: false },
                         { text: "低碳轉型與社會責任", correct: true }
@@ -156,15 +152,10 @@
             ]
         };
 
-        /************************************************
-         * 遊戲邏輯控制
-         ************************************************/
-        let currentLevel = 1;
-        let score = 0;
         let energy = 0;
         let currentQuizIdx = 0;
+        let isGameRunning = false;
 
-        // 初始化頁面文案
         document.getElementById('ui-intro').innerHTML = GAME_CONFIG.intro;
 
         function showScreen(id) {
@@ -173,11 +164,15 @@
         }
 
         function startGame() {
-            initLv1();
             showScreen('screen-lv1');
+            initLv1();
         }
 
-        // --- 第一關邏輯：簡易捕獲遊戲 ---
+        function goToSurvey() {
+            window.location.href = GAME_CONFIG.surveyUrl;
+        }
+
+        // --- 第一關邏輯 ---
         function initLv1() {
             const canvas = document.getElementById('game-canvas');
             const ctx = canvas.getContext('2d');
@@ -186,21 +181,25 @@
             let playerX = canvas.width / 2;
             let items = [];
             let lv1Score = 0;
+            isGameRunning = true;
 
-            // 觸控事件
-            canvas.addEventListener('touchmove', (e) => {
+            // 支援滑鼠與觸控
+            const moveHandler = (e) => {
                 const rect = canvas.getBoundingClientRect();
-                playerX = e.touches[0].clientX - rect.left;
-            });
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                playerX = clientX - rect.left;
+            };
+            canvas.addEventListener('touchmove', moveHandler);
+            canvas.addEventListener('mousemove', moveHandler);
 
             function update() {
+                if(!isGameRunning) return;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
                 // 畫玩家
                 ctx.fillStyle = '#FF0000';
-                ctx.fillRect(playerX - 20, canvas.height - 30, 40, 20);
+                ctx.fillRect(playerX - 25, canvas.height - 20, 50, 10);
 
-                // 生成與移動掉落物
                 if(Math.random() < 0.05) {
                     items.push({ x: Math.random() * canvas.width, y: 0, type: Math.random() > 0.3 ? 'red' : 'gray' });
                 }
@@ -209,41 +208,43 @@
                     item.y += 4;
                     ctx.fillStyle = item.type === 'red' ? '#FF0000' : '#666';
                     ctx.beginPath();
-                    ctx.arc(item.x, item.y, 8, 0, Math.PI*2);
+                    ctx.arc(item.x, item.y, 10, 0, Math.PI*2);
                     ctx.fill();
 
-                    // 碰撞檢測
-                    if(item.y > canvas.height - 40 && Math.abs(item.x - playerX) < 25) {
-                        if(item.type === 'red') lv1Score++;
-                        else lv1Score = Math.max(0, lv1Score - 1);
+                    if(item.y > canvas.height - 25 && Math.abs(item.x - playerX) < 30) {
+                        if(item.type === 'red') {
+                            lv1Score++;
+                            document.getElementById('score1').innerText = lv1Score;
+                        }
                         items.splice(index, 1);
-                        document.getElementById('score1').innerText = lv1Score;
                     }
+                    if(item.y > canvas.height) items.splice(index, 1);
                 });
 
                 if(lv1Score >= 10) {
-                    cancelAnimationFrame(anim);
+                    isGameRunning = false;
                     showScreen('screen-lv2');
                 } else {
-                    anim = requestAnimationFrame(update);
+                    requestAnimationFrame(update);
                 }
             }
-            let anim = requestAnimationFrame(update);
+            update();
         }
 
-        // --- 第二關邏輯：點擊連打 ---
+        // --- 第二關邏輯 ---
         function chargeEnergy() {
-            energy += 5;
+            energy += 10;
+            if(energy > 100) energy = 100;
             document.getElementById('energy-fill').style.width = energy + '%';
             if(energy >= 100) {
                 setTimeout(() => {
-                    initLv3();
                     showScreen('screen-lv3');
+                    initLv3();
                 }, 300);
             }
         }
 
-        // --- 第三關邏輯：決策問答 ---
+        // --- 第三關邏輯 ---
         function initLv3() {
             const q = GAME_CONFIG.quiz[currentQuizIdx];
             document.getElementById('quiz-question').innerText = q.question;
