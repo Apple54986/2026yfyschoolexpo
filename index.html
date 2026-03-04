@@ -45,11 +45,11 @@
         
         .score-board { font-size: 1.1rem; color: var(--yfy-pink); margin-bottom: 10px; font-weight: bold; }
 
-        /* 大按鈕 (紅色漸層) */
+        /* 封面、導覽頁與結尾的大按鈕 */
         .btn-main {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
             color: white; border: none;
-            padding: 15px 40px; font-size: 1.2rem; font-weight: bold;
+            padding: 12px 40px; font-size: 1.1rem; font-weight: bold;
             border-radius: 50px; cursor: pointer;
             box-shadow: 0 5px 15px rgba(255,0,0,0.3);
             transition: transform 0.1s;
@@ -82,14 +82,13 @@
         /* 圖片展示樣式 */
         .info-img {
             max-width: 100%;
-            max-height: 60vh;
+            max-height: 65vh;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             object-fit: contain;
         }
 
-        /* 拼圖區塊 */
         .puzzle-piece {
             background: var(--yfy-pink);
             color: white;
@@ -152,10 +151,18 @@
             <h1>紙屬於你的挑戰賽</h1>
             <p>啟動循環經濟<br>挑戰你的永續知識量</p>
             <br>
-            <button class="btn-main" onclick="startLevel1()">[ 立即啟動 ]</button>
+            <button class="btn-main" onclick="showYfyIntro()">[ 立即啟動 ]</button>
         </div>
 
-        <!-- 第一關：事業項目辨識 (原本的第二關) -->
+        <!-- 永豐餘簡介頁面 (新增) -->
+        <div id="screen-yfy-intro" class="level-screen">
+            <h2 style="color: var(--yfy-pink);">關於永豐餘</h2>
+            <img src="yfyintro.jpg" alt="永豐餘簡介" class="info-img">
+            <p style="font-size: 0.9rem; margin-bottom: 15px;">從紙業製造到永續能源轉型</p>
+            <button class="btn-main" onclick="startLevel1()">[ 開始遊戲 ]</button>
+        </div>
+
+        <!-- 第一關：是非題 -->
         <div id="screen-lv1" class="level-screen">
             <h2>第一關：永豐餘在做些甚麼?</h2>
             <div class="timer-bar-bg"><div id="timer-fill-lv1" class="timer-fill-pink"></div></div>
@@ -175,7 +182,7 @@
             <button class="btn-main" onclick="startLevel2()">[ 下一步 ]</button>
         </div>
 
-        <!-- 第二關：永豐餘五大循環 (原本的第一關) -->
+        <!-- 第二關：消消樂拼圖 -->
         <div id="screen-lv2" class="level-screen">
             <h2>第二關：永豐餘五大循環</h2>
             <div class="score-board">剩餘時間: <span id="lv2-timer">20</span>s</div>
@@ -205,7 +212,7 @@
         <div id="screen-result" class="level-screen">
             <h1 style="color:var(--yfy-pink)">MISSION COMPLETE</h1>
             <div style="font-size: 2rem; margin: 20px 0; color: var(--charcoal);">最終總分：<span id="total-score" style="color:var(--yfy-pink); font-size: 3rem;">0</span></div>
-            <p>恭喜完成挑戰！<br>點擊下方填寫問卷領取精美好禮🎁</p>
+            <p>恭喜完成挑戰！<br>點擊下方填寫問卷領取精美好禮。</p>
             <br>
             <button class="btn-main" onclick="goToSurvey()">[ 填寫問卷領取獎勵 ]</button>
         </div>
@@ -214,7 +221,6 @@
     <script>
         const GAME_CONFIG = {
             surveyUrl: "https://www.surveycake.com/s/OYYdG",
-            // 拼圖資料
             puzzleData: [
                 { text: "秸稈資源全利用技術", category: "農廢循環" },
                 { text: "廢水重複利用率達90%以上", category: "水循環" },
@@ -222,14 +228,12 @@
                 { text: "沼氣發電", category: "生質能循環" },
                 { text: "固碳產業", category: "碳循環" }
             ],
-            // 是非題資料
             binaryQuiz: [
                 { text: "五月花衛生紙", isTrue: true, correctAns: "是" },
                 { text: "只有傳統造紙", isTrue: false, correctAns: "不是" },
                 { text: "橘子工坊", isTrue: true, correctAns: "是" },
                 { text: "SRF固態燃料發電", isTrue: true, correctAns: "是" }
             ],
-            // 選擇題資料
             quiz: [
                 {
                     question: "永豐餘綠色發電，主要包含以下何者？",
@@ -245,10 +249,10 @@
         };
 
         let totalScore = 0;
-        let lv2CurrentIdx = 0; // 拼圖關卡索引
+        let lv2CurrentIdx = 0; 
         let lv2TimerVal = 20;
-        let binaryIdx = 0;     // 是非題關卡索引
-        let quizIdx = 0;       // 選擇題關卡索引
+        let binaryIdx = 0;     
+        let quizIdx = 0;       
         let timerInterval;
         let shuffledPuzzle = [];
 
@@ -261,7 +265,12 @@
 
         function goToSurvey() { window.location.href = GAME_CONFIG.surveyUrl; }
 
-        // --- 第一關：是非題 (原本的第二關) ---
+        // 顯示企業簡介圖片
+        function showYfyIntro() {
+            showScreen('screen-yfy-intro');
+        }
+
+        // --- 第一關：是非題 ---
         function startLevel1() {
             showScreen('screen-lv1');
             binaryIdx = 0;
@@ -270,7 +279,6 @@
 
         function initBinaryLv() {
             if (binaryIdx >= GAME_CONFIG.binaryQuiz.length) {
-                // 是非題結束，進到中場圖片頁
                 showScreen('screen-intro');
                 return;
             }
@@ -307,7 +315,7 @@
             setTimeout(() => { binaryIdx++; initBinaryLv(); }, 1500);
         }
 
-        // --- 第二關：拼圖消消樂 (原本的第一關) ---
+        // --- 第二關：拼圖消消樂 ---
         function startLevel2() {
             showScreen('screen-lv2');
             initPuzzleLv();
