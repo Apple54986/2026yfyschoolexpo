@@ -6,14 +6,13 @@
     <title>永豐餘挑戰賽</title>
     <style>
         :root {
-            --energy-red: #FF0000;
             --yfy-pink: #EC008C;      /* 核心粉色 */
-            --light-pink: #F27FB2;    /* 點擊時的淺粉色 */
+            --light-pink: #F27FB2;    /* 點擊後的淺粉色 */
+            --energy-red: #FF0000;    /* 封面與結尾用的紅色 */
             --deep-red: #8B0000;
             --charcoal: #121212;
             --light-gray: #F5F5F5;
             --tech-gray: #CCCCCC;
-            --bright-orange: #FF8C00;
             --white: #FFFFFF;
         }
 
@@ -46,22 +45,31 @@
         
         .score-board { font-size: 1.1rem; color: var(--yfy-pink); margin-bottom: 10px; font-weight: bold; }
 
-        /* 通用紅粉按鈕樣式 */
-        .btn-red {
+        /* 封面與結尾的大按鈕 (紅色漸層) */
+        .btn-main {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
             color: white; border: none;
             padding: 15px 40px; font-size: 1.2rem; font-weight: bold;
             border-radius: 50px; cursor: pointer;
             box-shadow: 0 5px 15px rgba(255,0,0,0.3);
-            transition: transform 0.1s, background 0.2s;
+            transition: transform 0.1s;
         }
-        .btn-red:active { transform: scale(0.95); }
 
-        /* 點擊選項時顯示淺粉色 */
-        .btn-clicked-effect {
-            background: var(--light-pink) !important;
-            color: white !important;
-            border-color: var(--light-pink) !important;
+        /* 遊戲中通用的粉色按鈕 (第二、三關使用) */
+        .btn-pink {
+            background-color: var(--yfy-pink);
+            color: white; border: none;
+            padding: 15px 30px; font-size: 1.1rem; font-weight: bold;
+            border-radius: 50px; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(236, 0, 140, 0.2);
+            transition: background 0.1s, transform 0.1s;
+            width: 100%;
+        }
+        
+        /* 點擊後的淺粉色狀態 #F27FB2 */
+        .btn-pink.clicked {
+            background-color: var(--light-pink) !important;
+            box-shadow: none;
         }
 
         .level-screen { 
@@ -72,7 +80,7 @@
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 第一關：題目方塊改為粉色 #EC008C */
+        /* 第一關：題目方塊 */
         .puzzle-piece {
             background: var(--yfy-pink);
             color: white;
@@ -94,6 +102,7 @@
             max-width: 400px;
         }
 
+        /* 第一關選項按鈕 */
         .target-box {
             border: 2px solid var(--tech-gray);
             background: var(--light-gray);
@@ -103,23 +112,17 @@
             font-weight: bold;
             color: var(--charcoal);
             cursor: pointer;
-            transition: background 0.2s, border-color 0.2s;
+            transition: background 0.2s;
             display: flex; align-items: center; justify-content: center;
         }
-
-        /* 點擊時顯示淺粉色 #F27FB2 */
         .target-box.clicked {
             background-color: var(--light-pink) !important;
             color: white !important;
             border-color: var(--light-pink) !important;
         }
+        .target-box.hidden { visibility: hidden; pointer-events: none; }
 
-        .target-box.hidden {
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        /* 時間軸倒數條改為粉色 #EC008C */
+        /* 時間軸倒數條 #EC008C */
         .timer-bar-bg { width: 85%; height: 12px; background: #EEE; border-radius: 6px; margin: 10px 0 20px 0; overflow: hidden; border: 1px solid #DDD; }
         .timer-fill-pink { width: 100%; height: 100%; background: var(--yfy-pink); transition: width 0.1s linear; }
 
@@ -127,9 +130,10 @@
         .correct { color: #28a745; }
         .wrong { color: var(--yfy-pink); }
 
-        .biz-card { font-size: 1.4rem; font-weight: bold; margin: 20px 0; color: var(--charcoal); background: var(--light-gray); padding: 20px; border-radius: 15px; width: 80%; }
-        .choice-container { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 300px; }
-        .binary-choice { display: flex; gap: 20px; }
+        .biz-card { font-size: 1.4rem; font-weight: bold; margin: 20px 0; color: var(--charcoal); background: var(--light-gray); padding: 20px; border-radius: 15px; width: 85%; }
+        
+        .binary-choice { display: flex; gap: 15px; width: 90%; max-width: 400px; }
+        .choice-container { display: flex; flex-direction: column; gap: 12px; width: 90%; max-width: 400px; }
     </style>
 </head>
 <body>
@@ -141,7 +145,7 @@
             <h1>永豐餘挑戰賽</h1>
             <p>啟動循環經濟<br>挑戰你的永續知識量</p>
             <br>
-            <button class="btn-red" onclick="startGame()">[ 立即啟動 ]</button>
+            <button class="btn-main" onclick="startGame()">[ 立即啟動 ]</button>
         </div>
 
         <!-- 第一關：永豐餘五大循環 -->
@@ -162,22 +166,22 @@
             <div id="lv1-feedback" class="feedback"></div>
         </div>
 
-        <!-- 第二關 -->
+        <!-- 第二關：事業項目辨識 -->
         <div id="screen-lv2" class="level-screen">
             <h2>第二關：永豐餘在做甚麼?</h2>
-            <p>請問這是屬於永豐餘的事業嗎？</p>
+            <p>這屬於永豐餘的事業嗎？</p>
             <div class="timer-bar-bg"><div id="timer-fill-lv2" class="timer-fill-pink"></div></div>
             <div id="biz-item-text" class="biz-card">載入中...</div>
             <div class="binary-choice" id="lv2-btns">
-                <button class="btn-red" id="btn-is" onclick="handleBinary(true, this)">是</button>
-                <button class="btn-red" id="btn-not" onclick="handleBinary(false, this)" style="background: var(--tech-gray); color: var(--charcoal); box-shadow: none;">不是</button>
+                <button class="btn-pink" id="btn-is" onclick="handleBinary(true, this)">是</button>
+                <button class="btn-pink" id="btn-not" onclick="handleBinary(false, this)">不是</button>
             </div>
             <div id="lv2-feedback" class="feedback"></div>
         </div>
 
-        <!-- 第三關 -->
+        <!-- 第三關：永續快問快答 -->
         <div id="screen-lv3" class="level-screen">
-            <h2>第三關：永豐餘快問快答</h2>
+            <h2>第三關：永續快問快答</h2>
             <div id="quiz-question" class="biz-card">載入中...</div>
             <div class="choice-container" id="quiz-options"></div>
             <div id="lv3-feedback" class="feedback"></div>
@@ -185,11 +189,11 @@
 
         <!-- 結束頁 -->
         <div id="screen-result" class="level-screen">
-            <h1 style="color:var(--energy-red)">MISSION COMPLETE</h1>
+            <h1 style="color:var(--yfy-pink)">MISSION COMPLETE</h1>
             <div style="font-size: 2rem; margin: 20px 0; color: var(--charcoal);">最終總分：<span id="total-score" style="color:var(--yfy-pink); font-size: 3rem;">0</span></div>
             <p>恭喜完成挑戰！<br>點擊下方填寫問卷領取精美好禮。</p>
             <br>
-            <button class="btn-red" onclick="goToSurvey()">[ 填寫問卷領取獎勵 ]</button>
+            <button class="btn-main" onclick="goToSurvey()">[ 填寫問卷領取獎勵 ]</button>
         </div>
     </div>
 
@@ -268,7 +272,7 @@
 
         function checkMatch(selectedCategory, element) {
             if(element.classList.contains('hidden')) return;
-            element.classList.add('clicked'); // 顯示淺粉色 #F27FB2
+            element.classList.add('clicked'); // 變淺粉色
 
             const feedback = document.getElementById('lv1-feedback');
             const currentItem = shuffledPuzzle[lv1CurrentIdx];
@@ -294,8 +298,8 @@
             const q = GAME_CONFIG.binaryQuiz[currentIdx];
             document.getElementById('biz-item-text').innerText = q.text;
             document.getElementById('lv2-feedback').innerText = "";
-            document.getElementById('btn-is').classList.remove('btn-clicked-effect');
-            document.getElementById('btn-not').classList.remove('btn-clicked-effect');
+            document.getElementById('btn-is').classList.remove('clicked');
+            document.getElementById('btn-not').classList.remove('clicked');
             
             let timeLeft = 4.0;
             clearInterval(timerInterval);
@@ -308,7 +312,7 @@
 
         function handleBinary(userChoice, element) {
             clearInterval(timerInterval);
-            if(element) element.classList.add('btn-clicked-effect'); // 顯示淺粉色 #F27FB2
+            if(element) element.classList.add('clicked'); // 選中變淺粉色 #F27FB2
 
             const q = GAME_CONFIG.binaryQuiz[currentIdx];
             const feedbackEl = document.getElementById('lv2-feedback');
@@ -336,10 +340,10 @@
             container.innerHTML = '';
             q.options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = 'btn-red';
+                btn.className = 'btn-pink'; // 預設粉色 #EC008C
                 btn.innerText = opt.text;
                 btn.onclick = () => {
-                    btn.classList.add('btn-clicked-effect'); // 顯示淺粉色 #F27FB2
+                    btn.classList.add('clicked'); // 選中變淺粉色 #F27FB2
                     const feedbackEl = document.getElementById('lv3-feedback');
                     if(opt.correct) {
                         totalScore++; feedbackEl.innerText = "恭喜答對"; feedbackEl.className = "feedback correct";
