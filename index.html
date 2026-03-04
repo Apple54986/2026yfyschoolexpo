@@ -22,7 +22,7 @@
             font-family: 'Segoe UI', "Microsoft JhengHei", Roboto, sans-serif;
             background-color: var(--white);
             color: var(--charcoal);
-            overflow: hidden; /* 防止全域滾動 */
+            overflow: hidden; 
             user-select: none;
             touch-action: none;
         }
@@ -41,11 +41,11 @@
         }
 
         h1 { color: var(--yfy-pink); margin-bottom: 5px; font-size: 1.6rem; }
-        h2 { color: var(--charcoal); font-size: 1.2rem; margin-bottom: 10px; }
+        /* 縮減 h2 上方空白，讓標題往上提 */
+        h2 { color: var(--charcoal); font-size: 1.2rem; margin: 0 0 10px 0; }
         
         .score-board { font-size: 1.1rem; color: var(--yfy-pink); margin-bottom: 10px; font-weight: bold; }
 
-        /* 大按鈕樣式 */
         .btn-main {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
             color: white; border: none;
@@ -53,11 +53,10 @@
             border-radius: 50px; cursor: pointer;
             box-shadow: 0 4px 10px rgba(255,0,0,0.3);
             transition: transform 0.1s;
-            margin-top: 10px;
+            margin-top: 5px;
             z-index: 10;
         }
 
-        /* 遊戲中通用的粉色按鈕 */
         .btn-pink {
             background-color: var(--yfy-pink);
             color: white; border: none;
@@ -75,21 +74,23 @@
 
         .level-screen { 
             display: none; width: 100%; height: 100%; 
-            flex-direction: column; align-items: center; justify-content: center;
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-start; /* 改為靠上對齊，減少頂部空白 */
             animation: fadeIn 0.4s ease-out;
-            overflow-y: auto; /* 允許單一頁面內容過多時可滾動 */
-            padding: 20px 0;
+            overflow-y: auto;
+            padding: 15px 0; /* 縮減上下內邊距 */
             box-sizing: border-box;
         }
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 圖片顯示優化 */
+        /* 簡介圖片優化：加大顯示面積，縮減間距 */
         .info-img {
-            max-width: 90%;
-            max-height: 53vh; /* 縮小圖片佔比 */
+            max-width: 95%; /* 寬度加到 95% */
+            max-height: 70vh; /* 高度提升到 70% 螢幕高度 */
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
             margin-bottom: 10px;
             object-fit: contain;
         }
@@ -151,7 +152,7 @@
 
     <div id="game-container">
         <!-- 進入頁 -->
-        <div id="screen-start" class="level-screen active">
+        <div id="screen-start" class="level-screen active" style="justify-content: center;">
             <img src="yfylogo.jpg" alt="永豐餘Logo" class="logo-img" onerror="this.style.display='none'">
             <h1>紙屬於你的挑戰賽</h1>
             <p>啟動循環經濟<br>挑戰你的永續知識量</p>
@@ -161,14 +162,14 @@
 
         <!-- 永豐餘簡介頁面 -->
         <div id="screen-yfy-intro" class="level-screen">
-            <h2 style="color: var(--yfy-pink);">關於永豐餘</h2>
+            <h2 style="color: var(--yfy-pink); margin-top: 5px;">關於永豐餘</h2>
             <img src="yfyintro.jpg" alt="永豐餘簡介" class="info-img">
             <button class="btn-main" onclick="startLevel1()">[ 開始遊戲 ]</button>
         </div>
 
         <!-- 第一關：是非題 -->
         <div id="screen-lv1" class="level-screen">
-            <h2>第一關：永豐餘在做些什麼?</h2>
+            <h2 style="margin-top: 5px;">第一關：永豐餘在做些什麼?</h2>
             <div class="timer-bar-bg"><div id="timer-fill-lv1" class="timer-fill-pink"></div></div>
             <div id="biz-item-text" class="biz-card">載入中...</div>
             <div class="binary-choice" id="lv1-btns">
@@ -180,7 +181,7 @@
 
         <!-- 中場前導：五大循環圖解 -->
         <div id="screen-intro" class="level-screen">
-            <h2>認識永豐餘五大循環</h2>
+            <h2 style="margin-top: 5px;">認識永豐餘五大循環</h2>
             <img src="5cycle.jpg" alt="五大循環圖" class="info-img">
             <p style="font-size: 0.9rem; margin-bottom: 10px;">請先瀏覽圖片內容</p>
             <button class="btn-main" onclick="startLevel2()">[ 下一步 ]</button>
@@ -188,7 +189,7 @@
 
         <!-- 第二關：消消樂拼圖 -->
         <div id="screen-lv2" class="level-screen">
-            <h2>第二關：永豐餘五大循環</h2>
+            <h2 style="margin-top: 5px;">第二關：永豐餘五大循環</h2>
             <div class="score-board">剩餘時間: <span id="lv2-timer">20</span>s</div>
             <div class="timer-bar-bg"><div id="timer-fill-lv2" class="timer-fill-pink"></div></div>
             
@@ -206,14 +207,14 @@
 
         <!-- 第三關：快問快答 -->
         <div id="screen-lv3" class="level-screen">
-            <h2>第三關：永續快問快答</h2>
+            <h2 style="margin-top: 5px;">第三關：永續快問快答</h2>
             <div id="quiz-question" class="biz-card">載入中...</div>
             <div class="choice-container" id="quiz-options"></div>
             <div id="lv3-feedback" class="feedback"></div>
         </div>
 
         <!-- 結束頁 -->
-        <div id="screen-result" class="level-screen">
+        <div id="screen-result" class="level-screen" style="justify-content: center;">
             <h1 style="color:var(--yfy-pink)">MISSION COMPLETE</h1>
             <div style="font-size: 1.8rem; margin: 15px 0; color: var(--charcoal);">最終總分：<span id="total-score" style="color:var(--yfy-pink); font-size: 2.5rem;">0</span></div>
             <p>恭喜完成挑戰！<br>點擊下方填寫問卷領取好禮🎁</p>
@@ -263,7 +264,6 @@
         function showScreen(id) {
             document.querySelectorAll('.level-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            // 每次切換畫面，滾動條回到頂部
             document.getElementById(id).scrollTop = 0;
         }
 
