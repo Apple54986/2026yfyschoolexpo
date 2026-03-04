@@ -7,6 +7,7 @@
     <style>
         :root {
             --energy-red: #FF0000;
+            --yfy-pink: #EC008C; /* 圖片中的粉紅色 */
             --deep-red: #8B0000;
             --charcoal: #121212;
             --light-gray: #F5F5F5;
@@ -19,8 +20,8 @@
             margin: 0; padding: 0;
             width: 100%; height: 100%;
             font-family: 'Segoe UI', "Microsoft JhengHei", Roboto, sans-serif;
-            background-color: var(--white); /* 背景改為白色 */
-            color: var(--charcoal); /* 文字改為炭黑 */
+            background-color: var(--white);
+            color: var(--charcoal);
             overflow: hidden;
             user-select: none;
             touch-action: none;
@@ -34,7 +35,6 @@
             padding: 15px; box-sizing: border-box;
         }
 
-        /* LOGO 樣式 */
         .logo-img {
             max-width: 200px;
             margin-bottom: 20px;
@@ -42,9 +42,8 @@
 
         h1 { color: var(--energy-red); margin-bottom: 5px; font-size: 1.8rem; }
         h2 { color: var(--charcoal); font-size: 1.3rem; margin-bottom: 15px; }
-        p { color: var(--charcoal); line-height: 1.6; }
-
-        .score-board { font-size: 1.1rem; color: var(--bright-orange); margin-bottom: 10px; font-weight: bold; }
+        
+        .score-board { font-size: 1.1rem; color: var(--yfy-pink); margin-bottom: 10px; font-weight: bold; }
 
         .btn-red {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
@@ -53,7 +52,6 @@
             border-radius: 50px; cursor: pointer;
             box-shadow: 0 5px 15px rgba(255,0,0,0.3);
             transition: transform 0.1s;
-            text-decoration: none; display: inline-block;
         }
         .btn-red:active { transform: scale(0.95); }
 
@@ -65,88 +63,73 @@
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 第一關拼圖分類樣式 */
-        #puzzle-zone {
-            width: 100%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
+        /* 第一關：消消樂樣式 */
         .puzzle-piece {
             background: var(--energy-red);
             color: white;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 12px;
             font-weight: bold;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            position: relative;
-            cursor: pointer;
+            font-size: 1.2rem;
+            width: 80%;
+            max-width: 350px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             border: 2px solid var(--deep-red);
-        }
-
-        /* 拼圖凹凸裝飾樣式 */
-        .puzzle-piece::after {
-            content: "";
-            position: absolute;
-            right: -10px; top: 50%;
-            transform: translateY(-50%);
-            width: 20px; height: 20px;
-            background: var(--energy-red);
-            border-radius: 50%;
-            border-right: 2px solid var(--deep-red);
         }
 
         .drop-targets {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
-            margin-top: 20px;
+            max-width: 400px;
         }
 
         .target-box {
-            border: 2px dashed var(--tech-gray);
+            border: 2px solid var(--tech-gray);
             background: var(--light-gray);
             border-radius: 10px;
-            padding: 12px 5px;
+            padding: 15px 5px;
             font-size: 0.95rem;
             font-weight: bold;
             color: var(--charcoal);
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .target-box.selected {
-            border-color: var(--energy-red);
-            background: rgba(255, 0, 0, 0.05);
+        /* 點擊答案時顯示粉紅色 */
+        .target-box.clicked {
+            background-color: var(--yfy-pink) !important;
+            color: white !important;
+            border-color: var(--yfy-pink) !important;
         }
 
-        /* 通用倒數計時條 */
-        .timer-bar-bg { width: 85%; height: 10px; background: #EEE; border-radius: 5px; margin: 10px 0 20px 0; overflow: hidden; border: 1px solid #DDD; }
-        #timer-fill { width: 100%; height: 100%; background: var(--energy-red); transition: width 0.1s linear; }
+        /* 答對消失 */
+        .target-box.hidden {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* 通用倒數計時條 - 改為粉紅色 */
+        .timer-bar-bg { width: 85%; height: 12px; background: #EEE; border-radius: 6px; margin: 10px 0 20px 0; overflow: hidden; border: 1px solid #DDD; }
+        #timer-fill { width: 100%; height: 100%; background: var(--yfy-pink); transition: width 0.1s linear; }
+        .timer-fill-pink { background: var(--yfy-pink) !important; }
 
         .feedback { font-size: 1.2rem; font-weight: bold; margin-top: 15px; min-height: 2rem; }
         .correct { color: #28a745; }
-        .wrong { color: var(--energy-red); }
+        .wrong { color: var(--yfy-pink); }
 
-        /* 問答題樣式調整 */
         .biz-card { font-size: 1.4rem; font-weight: bold; margin: 20px 0; color: var(--charcoal); background: var(--light-gray); padding: 20px; border-radius: 15px; width: 80%; }
-        .binary-choice { display: flex; gap: 20px; }
         .choice-container { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 300px; }
     </style>
 </head>
 <body>
 
     <div id="game-container">
-        
         <!-- 進入頁 -->
         <div id="screen-start" class="level-screen active">
-            <!-- LOGO 圖片位置 -->
             <img src="yfylogo.jpg" alt="永豐餘Logo" class="logo-img" onerror="this.style.display='none'">
             <h1>永豐餘挑戰賽</h1>
             <p>啟動循環經濟紅能引擎<br>挑戰你的永續知識量！</p>
@@ -154,43 +137,39 @@
             <button class="btn-red" onclick="startGame()">[ 立即啟動 ]</button>
         </div>
 
-        <!-- 第一關：分類拼圖 -->
+        <!-- 第一關：永豐餘五大循環 (消消樂) -->
         <div id="screen-lv1" class="level-screen">
-            <h2>第一關：循環拼圖</h2>
-            <div class="score-board">剩餘時間: <span id="lv1-timer">30</span>s</div>
-            <div class="timer-bar-bg"><div id="timer-fill-lv1"></div></div>
+            <h2>第一關：永豐餘五大循環</h2>
+            <div class="score-board">剩餘時間: <span id="lv1-timer">20</span>s</div>
+            <div class="timer-bar-bg"><div id="timer-fill" class="timer-fill-pink" style="width: 100%;"></div></div>
             
-            <p style="font-size: 0.9rem; margin-bottom: 10px;">請點擊「拼圖塊」再點擊正確的「循環分類」</p>
-            
-            <div id="puzzle-zone">
-                <div id="current-puzzle" class="puzzle-piece">載入中...</div>
-            </div>
+            <div id="current-puzzle" class="puzzle-piece">載入中...</div>
 
-            <div class="drop-targets">
-                <div class="target-box" onclick="checkMatch('農廢循環')">農廢循環</div>
-                <div class="target-box" onclick="checkMatch('水循環')">水循環</div>
-                <div class="target-box" onclick="checkMatch('紙的再生循環')">紙的再生循環</div>
-                <div class="target-box" onclick="checkMatch('生質能循環')">生質能循環</div>
-                <div class="target-box" onclick="checkMatch('碳循環')">碳循環</div>
+            <div class="drop-targets" id="lv1-answer-zone">
+                <div class="target-box" data-ans="農廢循環" onclick="checkMatch('農廢循環', this)">農廢循環</div>
+                <div class="target-box" data-ans="水循環" onclick="checkMatch('水循環', this)">水循環</div>
+                <div class="target-box" data-ans="紙的再生循環" onclick="checkMatch('紙的再生循環', this)">紙的再生循環</div>
+                <div class="target-box" data-ans="生質能循環" onclick="checkMatch('生質能循環', this)">生質能循環</div>
+                <div class="target-box" data-ans="碳循環" onclick="checkMatch('碳循環', this)">碳循環</div>
             </div>
             
             <div id="lv1-feedback" class="feedback"></div>
         </div>
 
-        <!-- 第二關：事業項目 -->
+        <!-- 第二關 -->
         <div id="screen-lv2" class="level-screen">
             <h2>第二關：事業項目辨識</h2>
             <p>這項是永豐餘的事業項目嗎？</p>
-            <div class="timer-bar-bg"><div id="timer-fill-lv2"></div></div>
+            <div class="timer-bar-bg"><div id="timer-fill-lv2" class="timer-fill-pink"></div></div>
             <div id="biz-item-text" class="biz-card">載入中...</div>
-            <div class="binary-choice" id="lv2-btns">
+            <div class="binary-choice">
                 <button class="btn-red" onclick="handleBinary(true)">是</button>
                 <button class="btn-red" onclick="handleBinary(false)" style="background: var(--tech-gray); color: var(--charcoal);">不是</button>
             </div>
             <div id="lv2-feedback" class="feedback"></div>
         </div>
 
-        <!-- 第三關：快問快答 -->
+        <!-- 第三關 -->
         <div id="screen-lv3" class="level-screen">
             <h2>第三關：永續快問快答</h2>
             <div id="quiz-question" class="biz-card">載入中...</div>
@@ -201,18 +180,16 @@
         <!-- 結束頁 -->
         <div id="screen-result" class="level-screen">
             <h1 style="color:var(--energy-red)">MISSION COMPLETE</h1>
-            <div style="font-size: 2rem; margin: 20px 0; color: var(--charcoal);">最終總分：<span id="total-score" style="color:var(--energy-red); font-size: 3rem;">0</span></div>
+            <div style="font-size: 2rem; margin: 20px 0; color: var(--charcoal);">最終總分：<span id="total-score" style="color:var(--yfy-pink); font-size: 3rem;">0</span></div>
             <p>恭喜完成挑戰！<br>點擊下方填寫問卷領取精美好禮。</p>
             <br>
             <button class="btn-red" onclick="goToSurvey()">[ 填寫問卷領取獎勵 ]</button>
         </div>
-
     </div>
 
     <script>
         const GAME_CONFIG = {
             surveyUrl: "https://www.surveycake.com/s/OYYdG",
-            // 第一關資料
             puzzleData: [
                 { text: "秸稈資源全利用技術", category: "農廢循環" },
                 { text: "廢水重複利用率達90%以上", category: "水循環" },
@@ -220,30 +197,20 @@
                 { text: "沼氣發電", category: "生質能循環" },
                 { text: "固碳產業", category: "碳循環" }
             ],
-            // 第二關資料
             binaryQuiz: [
                 { text: "五月花衛生紙", isTrue: true, correctAns: "是" },
                 { text: "只有傳統造紙", isTrue: false, correctAns: "不是" },
                 { text: "永續能源發電", isTrue: true, correctAns: "是" }
             ],
-            // 第三關資料
             quiz: [
                 {
                     question: "永豐餘綠色發電，主要包含以下何者？",
-                    options: [
-                        { text: "沼氣發電", correct: true },
-                        { text: "核能發電", correct: false },
-                        { text: "火力發電", correct: false }
-                    ],
+                    options: [{ text: "沼氣發電", correct: true }, { text: "核能發電", correct: false }, { text: "火力發電", correct: false }],
                     correctAns: "沼氣發電"
                 },
                 {
                     question: "永續發展中，最重要的核心是什麼？",
-                    options: [
-                        { text: "持續增加碳排放", correct: false },
-                        { text: "企業快速成長獲利", correct: false },
-                        { text: "循環經濟與社會責任", correct: true }
-                    ],
+                    options: [{ text: "持續增加碳排放", correct: false }, { text: "企業快速成長獲利", correct: false }, { text: "循環經濟與社會責任", correct: true }],
                     correctAns: "循環經濟與社會責任"
                 }
             ]
@@ -251,13 +218,18 @@
 
         let totalScore = 0;
         let lv1CurrentIdx = 0;
-        let lv1TimerVal = 30;
+        let lv1TimerVal = 20;
         let currentIdx = 0;
         let timerInterval;
+        let shuffledPuzzle = [];
 
         function showScreen(id) {
             document.querySelectorAll('.level-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+        }
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
         }
 
         function startGame() {
@@ -269,58 +241,72 @@
             window.location.href = GAME_CONFIG.surveyUrl;
         }
 
-        // --- 第一關邏輯 (拼圖分類) ---
+        // --- 第一關邏輯 (消消樂) ---
         function initLv1() {
+            shuffledPuzzle = shuffle([...GAME_CONFIG.puzzleData]); // 題目隨機排序
             lv1CurrentIdx = 0;
-            lv1TimerVal = 30;
+            lv1TimerVal = 20;
+            
+            // 重置答案按鈕狀態
+            document.querySelectorAll('.target-box').forEach(el => {
+                el.classList.remove('hidden', 'clicked');
+            });
+
             updatePuzzle();
             
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 lv1TimerVal -= 0.1;
                 document.getElementById('lv1-timer').innerText = Math.ceil(lv1TimerVal);
-                document.getElementById('timer-fill-lv1').style.width = (lv1TimerVal / 30 * 100) + '%';
+                document.getElementById('timer-fill').style.width = (lv1TimerVal / 20 * 100) + '%';
                 
                 if (lv1TimerVal <= 0) {
                     clearInterval(timerInterval);
-                    alert("第一關時間到！");
                     finishLv1();
                 }
             }, 100);
         }
 
         function updatePuzzle() {
-            if (lv1CurrentIdx < GAME_CONFIG.puzzleData.length) {
-                document.getElementById('current-puzzle').innerText = GAME_CONFIG.puzzleData[lv1CurrentIdx].text;
+            if (lv1CurrentIdx < shuffledPuzzle.length) {
+                document.getElementById('current-puzzle').innerText = shuffledPuzzle[lv1CurrentIdx].text;
             } else {
                 clearInterval(timerInterval);
-                finishLv1();
+                setTimeout(finishLv1, 500);
             }
         }
 
-        function checkMatch(selectedCategory) {
+        function checkMatch(selectedCategory, element) {
+            if(element.classList.contains('hidden')) return;
+
             const feedback = document.getElementById('lv1-feedback');
-            const currentItem = GAME_CONFIG.puzzleData[lv1CurrentIdx];
+            const currentItem = shuffledPuzzle[lv1CurrentIdx];
+
+            // 視覺回饋：變粉紅色
+            element.classList.add('clicked');
 
             if (selectedCategory === currentItem.category) {
                 totalScore++;
                 feedback.innerText = "恭喜答對";
                 feedback.className = "feedback correct";
-            } else {
-                feedback.innerText = "答錯囉！答案是「" + currentItem.category + "」";
-                feedback.className = "feedback wrong";
-            }
-
-            lv1CurrentIdx++;
-            // 延遲一下讓玩家看反饋
-            setTimeout(() => {
-                feedback.innerText = "";
-                if (lv1CurrentIdx < GAME_CONFIG.puzzleData.length) {
+                
+                // 答對消掉
+                setTimeout(() => {
+                    element.classList.add('hidden');
+                    feedback.innerText = "";
+                    lv1CurrentIdx++;
                     updatePuzzle();
-                } else {
-                    finishLv1();
-                }
-            }, 1200);
+                }, 400);
+            } else {
+                feedback.innerText = "答錯囉！";
+                feedback.className = "feedback wrong";
+                
+                // 答錯閃一下粉紅後恢復
+                setTimeout(() => {
+                    element.classList.remove('clicked');
+                    feedback.innerText = "";
+                }, 400);
+            }
         }
 
         function finishLv1() {
@@ -331,16 +317,11 @@
         // --- 第二關邏輯 ---
         function initLv2() {
             if (currentIdx >= GAME_CONFIG.binaryQuiz.length) {
-                currentIdx = 0;
-                showScreen('screen-lv3');
-                initLv3();
-                return;
+                currentIdx = 0; showScreen('screen-lv3'); initLv3(); return;
             }
-
             const q = GAME_CONFIG.binaryQuiz[currentIdx];
             document.getElementById('biz-item-text').innerText = q.text;
             document.getElementById('lv2-feedback').innerText = "";
-            
             let timeLeft = 4.0;
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
@@ -354,39 +335,29 @@
             clearInterval(timerInterval);
             const q = GAME_CONFIG.binaryQuiz[currentIdx];
             const feedbackEl = document.getElementById('lv2-feedback');
-
             if (userChoice === null) {
                 feedbackEl.innerText = "時間到囉！答案是「" + q.correctAns + "」";
                 feedbackEl.className = "feedback wrong";
             } else if (userChoice === q.isTrue) {
-                totalScore++;
-                feedbackEl.innerText = "恭喜答對";
-                feedbackEl.className = "feedback correct";
+                totalScore++; feedbackEl.innerText = "恭喜答對"; feedbackEl.className = "feedback correct";
             } else {
                 feedbackEl.innerText = "答錯囉！答案是「" + q.correctAns + "」";
                 feedbackEl.className = "feedback wrong";
             }
-
-            setTimeout(() => {
-                currentIdx++;
-                initLv2();
-            }, 1500);
+            setTimeout(() => { currentIdx++; initLv2(); }, 1500);
         }
 
         // --- 第三關邏輯 ---
         function initLv3() {
             if (currentIdx >= GAME_CONFIG.quiz.length) {
                 document.getElementById('total-score').innerText = totalScore;
-                showScreen('screen-result');
-                return;
+                showScreen('screen-result'); return;
             }
-
             const q = GAME_CONFIG.quiz[currentIdx];
             document.getElementById('quiz-question').innerText = q.question;
             document.getElementById('lv3-feedback').innerText = "";
             const container = document.getElementById('quiz-options');
             container.innerHTML = '';
-            
             q.options.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'btn-red';
@@ -394,17 +365,12 @@
                 btn.onclick = () => {
                     const feedbackEl = document.getElementById('lv3-feedback');
                     if(opt.correct) {
-                        totalScore++;
-                        feedbackEl.innerText = "恭喜答對";
-                        feedbackEl.className = "feedback correct";
+                        totalScore++; feedbackEl.innerText = "恭喜答對"; feedbackEl.className = "feedback correct";
                     } else {
                         feedbackEl.innerText = "答錯囉！答案是「" + q.correctAns + "」";
                         feedbackEl.className = "feedback wrong";
                     }
-                    setTimeout(() => {
-                        currentIdx++;
-                        initLv3();
-                    }, 1500);
+                    setTimeout(() => { currentIdx++; initLv3(); }, 1500);
                 };
                 container.appendChild(btn);
             });
