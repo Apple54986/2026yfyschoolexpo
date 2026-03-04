@@ -7,7 +7,8 @@
     <style>
         :root {
             --energy-red: #FF0000;
-            --yfy-pink: #EC008C; /* 圖片中的粉紅色 */
+            --yfy-pink: #EC008C;      /* 核心粉色 */
+            --light-pink: #F27FB2;    /* 點擊時的淺粉色 */
             --deep-red: #8B0000;
             --charcoal: #121212;
             --light-gray: #F5F5F5;
@@ -40,20 +41,28 @@
             margin-bottom: 20px;
         }
 
-        h1 { color: var(--energy-red); margin-bottom: 5px; font-size: 1.8rem; }
+        h1 { color: var(--yfy-pink); margin-bottom: 5px; font-size: 1.8rem; }
         h2 { color: var(--charcoal); font-size: 1.3rem; margin-bottom: 15px; }
         
         .score-board { font-size: 1.1rem; color: var(--yfy-pink); margin-bottom: 10px; font-weight: bold; }
 
+        /* 通用紅粉按鈕樣式 */
         .btn-red {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
             color: white; border: none;
             padding: 15px 40px; font-size: 1.2rem; font-weight: bold;
             border-radius: 50px; cursor: pointer;
             box-shadow: 0 5px 15px rgba(255,0,0,0.3);
-            transition: transform 0.1s;
+            transition: transform 0.1s, background 0.2s;
         }
         .btn-red:active { transform: scale(0.95); }
+
+        /* 點擊選項時顯示淺粉色 */
+        .btn-clicked-effect {
+            background: var(--light-pink) !important;
+            color: white !important;
+            border-color: var(--light-pink) !important;
+        }
 
         .level-screen { 
             display: none; width: 100%; height: 100%; 
@@ -63,19 +72,18 @@
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 第一關：消消樂樣式 */
+        /* 第一關：題目方塊改為粉色 #EC008C */
         .puzzle-piece {
-            background: var(--energy-red);
+            background: var(--yfy-pink);
             color: white;
             padding: 20px;
             border-radius: 12px;
             font-weight: bold;
             font-size: 1.2rem;
-            width: 80%;
+            width: 85%;
             max-width: 350px;
             margin-bottom: 30px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            border: 2px solid var(--deep-red);
         }
 
         .drop-targets {
@@ -95,27 +103,25 @@
             font-weight: bold;
             color: var(--charcoal);
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.2s, border-color 0.2s;
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* 點擊答案時顯示粉紅色 */
+        /* 點擊時顯示淺粉色 #F27FB2 */
         .target-box.clicked {
-            background-color: var(--yfy-pink) !important;
+            background-color: var(--light-pink) !important;
             color: white !important;
-            border-color: var(--yfy-pink) !important;
+            border-color: var(--light-pink) !important;
         }
 
-        /* 答對消失 */
         .target-box.hidden {
             visibility: hidden;
             pointer-events: none;
         }
 
-        /* 通用倒數計時條 - 改為粉紅色 */
+        /* 時間軸倒數條改為粉色 #EC008C */
         .timer-bar-bg { width: 85%; height: 12px; background: #EEE; border-radius: 6px; margin: 10px 0 20px 0; overflow: hidden; border: 1px solid #DDD; }
-        #timer-fill { width: 100%; height: 100%; background: var(--yfy-pink); transition: width 0.1s linear; }
-        .timer-fill-pink { background: var(--yfy-pink) !important; }
+        .timer-fill-pink { width: 100%; height: 100%; background: var(--yfy-pink); transition: width 0.1s linear; }
 
         .feedback { font-size: 1.2rem; font-weight: bold; margin-top: 15px; min-height: 2rem; }
         .correct { color: #28a745; }
@@ -123,6 +129,7 @@
 
         .biz-card { font-size: 1.4rem; font-weight: bold; margin: 20px 0; color: var(--charcoal); background: var(--light-gray); padding: 20px; border-radius: 15px; width: 80%; }
         .choice-container { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 300px; }
+        .binary-choice { display: flex; gap: 20px; }
     </style>
 </head>
 <body>
@@ -132,46 +139,45 @@
         <div id="screen-start" class="level-screen active">
             <img src="yfylogo.jpg" alt="永豐餘Logo" class="logo-img" onerror="this.style.display='none'">
             <h1>永豐餘挑戰賽</h1>
-            <p>啟動循環經濟紅能引擎<br>挑戰你的永續知識量！</p>
+            <p>啟動循環經濟<br>挑戰你的永續知識量</p>
             <br>
             <button class="btn-red" onclick="startGame()">[ 立即啟動 ]</button>
         </div>
 
-        <!-- 第一關：永豐餘五大循環 (消消樂) -->
+        <!-- 第一關：永豐餘五大循環 -->
         <div id="screen-lv1" class="level-screen">
             <h2>第一關：永豐餘五大循環</h2>
             <div class="score-board">剩餘時間: <span id="lv1-timer">20</span>s</div>
-            <div class="timer-bar-bg"><div id="timer-fill" class="timer-fill-pink" style="width: 100%;"></div></div>
+            <div class="timer-bar-bg"><div id="timer-fill-lv1" class="timer-fill-pink"></div></div>
             
             <div id="current-puzzle" class="puzzle-piece">載入中...</div>
 
             <div class="drop-targets" id="lv1-answer-zone">
-                <div class="target-box" data-ans="農廢循環" onclick="checkMatch('農廢循環', this)">農廢循環</div>
-                <div class="target-box" data-ans="水循環" onclick="checkMatch('水循環', this)">水循環</div>
-                <div class="target-box" data-ans="紙的再生循環" onclick="checkMatch('紙的再生循環', this)">紙的再生循環</div>
-                <div class="target-box" data-ans="生質能循環" onclick="checkMatch('生質能循環', this)">生質能循環</div>
-                <div class="target-box" data-ans="碳循環" onclick="checkMatch('碳循環', this)">碳循環</div>
+                <div class="target-box" onclick="checkMatch('農廢循環', this)">農廢循環</div>
+                <div class="target-box" onclick="checkMatch('水循環', this)">水循環</div>
+                <div class="target-box" onclick="checkMatch('紙的再生循環', this)">紙的再生循環</div>
+                <div class="target-box" onclick="checkMatch('生質能循環', this)">生質能循環</div>
+                <div class="target-box" onclick="checkMatch('碳循環', this)">碳循環</div>
             </div>
-            
             <div id="lv1-feedback" class="feedback"></div>
         </div>
 
         <!-- 第二關 -->
         <div id="screen-lv2" class="level-screen">
-            <h2>第二關：事業項目辨識</h2>
-            <p>這項是永豐餘的事業項目嗎？</p>
+            <h2>第二關：永豐餘在做甚麼?</h2>
+            <p>請問這是屬於永豐餘的事業嗎？</p>
             <div class="timer-bar-bg"><div id="timer-fill-lv2" class="timer-fill-pink"></div></div>
             <div id="biz-item-text" class="biz-card">載入中...</div>
-            <div class="binary-choice">
-                <button class="btn-red" onclick="handleBinary(true)">是</button>
-                <button class="btn-red" onclick="handleBinary(false)" style="background: var(--tech-gray); color: var(--charcoal);">不是</button>
+            <div class="binary-choice" id="lv2-btns">
+                <button class="btn-red" id="btn-is" onclick="handleBinary(true, this)">是</button>
+                <button class="btn-red" id="btn-not" onclick="handleBinary(false, this)" style="background: var(--tech-gray); color: var(--charcoal); box-shadow: none;">不是</button>
             </div>
             <div id="lv2-feedback" class="feedback"></div>
         </div>
 
         <!-- 第三關 -->
         <div id="screen-lv3" class="level-screen">
-            <h2>第三關：永續快問快答</h2>
+            <h2>第三關：永豐餘快問快答</h2>
             <div id="quiz-question" class="biz-card">載入中...</div>
             <div class="choice-container" id="quiz-options"></div>
             <div id="lv3-feedback" class="feedback"></div>
@@ -228,111 +234,82 @@
             document.getElementById(id).classList.add('active');
         }
 
-        function shuffle(array) {
-            return array.sort(() => Math.random() - 0.5);
-        }
+        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
         function startGame() {
             showScreen('screen-lv1');
             initLv1();
         }
 
-        function goToSurvey() {
-            window.location.href = GAME_CONFIG.surveyUrl;
-        }
+        function goToSurvey() { window.location.href = GAME_CONFIG.surveyUrl; }
 
-        // --- 第一關邏輯 (消消樂) ---
+        // --- 第一關邏輯 ---
         function initLv1() {
-            shuffledPuzzle = shuffle([...GAME_CONFIG.puzzleData]); // 題目隨機排序
+            shuffledPuzzle = shuffle([...GAME_CONFIG.puzzleData]);
             lv1CurrentIdx = 0;
             lv1TimerVal = 20;
-            
-            // 重置答案按鈕狀態
-            document.querySelectorAll('.target-box').forEach(el => {
-                el.classList.remove('hidden', 'clicked');
-            });
-
+            document.querySelectorAll('.target-box').forEach(el => el.classList.remove('hidden', 'clicked'));
             updatePuzzle();
             
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 lv1TimerVal -= 0.1;
                 document.getElementById('lv1-timer').innerText = Math.ceil(lv1TimerVal);
-                document.getElementById('timer-fill').style.width = (lv1TimerVal / 20 * 100) + '%';
-                
-                if (lv1TimerVal <= 0) {
-                    clearInterval(timerInterval);
-                    finishLv1();
-                }
+                document.getElementById('timer-fill-lv1').style.width = (lv1TimerVal / 20 * 100) + '%';
+                if (lv1TimerVal <= 0) { clearInterval(timerInterval); finishLv1(); }
             }, 100);
         }
 
         function updatePuzzle() {
             if (lv1CurrentIdx < shuffledPuzzle.length) {
                 document.getElementById('current-puzzle').innerText = shuffledPuzzle[lv1CurrentIdx].text;
-            } else {
-                clearInterval(timerInterval);
-                setTimeout(finishLv1, 500);
-            }
+            } else { clearInterval(timerInterval); setTimeout(finishLv1, 500); }
         }
 
         function checkMatch(selectedCategory, element) {
             if(element.classList.contains('hidden')) return;
+            element.classList.add('clicked'); // 顯示淺粉色 #F27FB2
 
             const feedback = document.getElementById('lv1-feedback');
             const currentItem = shuffledPuzzle[lv1CurrentIdx];
 
-            // 視覺回饋：變粉紅色
-            element.classList.add('clicked');
-
             if (selectedCategory === currentItem.category) {
                 totalScore++;
-                feedback.innerText = "恭喜答對";
-                feedback.className = "feedback correct";
-                
-                // 答對消掉
+                feedback.innerText = "恭喜答對"; feedback.className = "feedback correct";
                 setTimeout(() => {
                     element.classList.add('hidden');
-                    feedback.innerText = "";
-                    lv1CurrentIdx++;
-                    updatePuzzle();
+                    feedback.innerText = ""; lv1CurrentIdx++; updatePuzzle();
                 }, 400);
             } else {
-                feedback.innerText = "答錯囉！";
-                feedback.className = "feedback wrong";
-                
-                // 答錯閃一下粉紅後恢復
-                setTimeout(() => {
-                    element.classList.remove('clicked');
-                    feedback.innerText = "";
-                }, 400);
+                feedback.innerText = "答錯囉！"; feedback.className = "feedback wrong";
+                setTimeout(() => { element.classList.remove('clicked'); feedback.innerText = ""; }, 400);
             }
         }
 
-        function finishLv1() {
-            showScreen('screen-lv2');
-            initLv2();
-        }
+        function finishLv1() { showScreen('screen-lv2'); initLv2(); }
 
         // --- 第二關邏輯 ---
         function initLv2() {
-            if (currentIdx >= GAME_CONFIG.binaryQuiz.length) {
-                currentIdx = 0; showScreen('screen-lv3'); initLv3(); return;
-            }
+            if (currentIdx >= GAME_CONFIG.binaryQuiz.length) { currentIdx = 0; showScreen('screen-lv3'); initLv3(); return; }
             const q = GAME_CONFIG.binaryQuiz[currentIdx];
             document.getElementById('biz-item-text').innerText = q.text;
             document.getElementById('lv2-feedback').innerText = "";
+            document.getElementById('btn-is').classList.remove('btn-clicked-effect');
+            document.getElementById('btn-not').classList.remove('btn-clicked-effect');
+            
             let timeLeft = 4.0;
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeLeft -= 0.05;
                 document.getElementById('timer-fill-lv2').style.width = (timeLeft / 4 * 100) + '%';
-                if (timeLeft <= 0) handleBinary(null); 
+                if (timeLeft <= 0) handleBinary(null, null); 
             }, 50);
         }
 
-        function handleBinary(userChoice) {
+        function handleBinary(userChoice, element) {
             clearInterval(timerInterval);
+            if(element) element.classList.add('btn-clicked-effect'); // 顯示淺粉色 #F27FB2
+
             const q = GAME_CONFIG.binaryQuiz[currentIdx];
             const feedbackEl = document.getElementById('lv2-feedback');
             if (userChoice === null) {
@@ -350,8 +327,7 @@
         // --- 第三關邏輯 ---
         function initLv3() {
             if (currentIdx >= GAME_CONFIG.quiz.length) {
-                document.getElementById('total-score').innerText = totalScore;
-                showScreen('screen-result'); return;
+                document.getElementById('total-score').innerText = totalScore; showScreen('screen-result'); return;
             }
             const q = GAME_CONFIG.quiz[currentIdx];
             document.getElementById('quiz-question').innerText = q.question;
@@ -363,6 +339,7 @@
                 btn.className = 'btn-red';
                 btn.innerText = opt.text;
                 btn.onclick = () => {
+                    btn.classList.add('btn-clicked-effect'); // 顯示淺粉色 #F27FB2
                     const feedbackEl = document.getElementById('lv3-feedback');
                     if(opt.correct) {
                         totalScore++; feedbackEl.innerText = "恭喜答對"; feedbackEl.className = "feedback correct";
