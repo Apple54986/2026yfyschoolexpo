@@ -45,7 +45,7 @@
         
         .score-board { font-size: 1.1rem; color: var(--yfy-pink); margin-bottom: 10px; font-weight: bold; }
 
-        /* 封面與結尾的大按鈕 (紅色漸層) */
+        /* 封面、導覽頁與結尾的大按鈕 */
         .btn-main {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
             color: white; border: none;
@@ -55,7 +55,7 @@
             transition: transform 0.1s;
         }
 
-        /* 遊戲中通用的粉色按鈕 (第二、三關使用) */
+        /* 遊戲中通用的粉色按鈕 */
         .btn-pink {
             background-color: var(--yfy-pink);
             color: white; border: none;
@@ -66,7 +66,6 @@
             width: 100%;
         }
         
-        /* 點擊後的淺粉色狀態 #F27FB2 */
         .btn-pink.clicked {
             background-color: var(--light-pink) !important;
             box-shadow: none;
@@ -80,7 +79,16 @@
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 第一關：題目方塊 */
+        /* 圖片展示樣式 */
+        .info-img {
+            max-width: 100%;
+            max-height: 60vh;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            object-fit: contain;
+        }
+
         .puzzle-piece {
             background: var(--yfy-pink);
             color: white;
@@ -102,7 +110,6 @@
             max-width: 400px;
         }
 
-        /* 第一關選項按鈕 */
         .target-box {
             border: 2px solid var(--tech-gray);
             background: var(--light-gray);
@@ -122,7 +129,6 @@
         }
         .target-box.hidden { visibility: hidden; pointer-events: none; }
 
-        /* 時間軸倒數條 #EC008C */
         .timer-bar-bg { width: 85%; height: 12px; background: #EEE; border-radius: 6px; margin: 10px 0 20px 0; overflow: hidden; border: 1px solid #DDD; }
         .timer-fill-pink { width: 100%; height: 100%; background: var(--yfy-pink); transition: width 0.1s linear; }
 
@@ -145,7 +151,15 @@
             <h1>紙屬於你的挑戰賽</h1>
             <p>啟動循環經濟<br>挑戰你的永續知識量</p>
             <br>
-            <button class="btn-main" onclick="startGame()">[ 立即啟動 ]</button>
+            <button class="btn-main" onclick="goToIntro()">[ 立即啟動 ]</button>
+        </div>
+
+        <!-- 第一關前導：五大循環圖解 -->
+        <div id="screen-intro" class="level-screen">
+            <h2>認識永豐餘五大循環</h2>
+            <img src="5cycle.jpg" alt="五大循環圖" class="info-img">
+            <p style="font-size: 0.9rem; margin-bottom: 15px;">請先瀏覽圖片內容</p>
+            <button class="btn-main" onclick="startGame()">[ 下一步 ]</button>
         </div>
 
         <!-- 第一關：永豐餘五大循環 -->
@@ -166,7 +180,7 @@
             <div id="lv1-feedback" class="feedback"></div>
         </div>
 
-        <!-- 第一關：事業項目辨識 -->
+        <!-- 第二關 -->
         <div id="screen-lv2" class="level-screen">
             <h2>第二關：永豐餘在做些甚麼?</h2>
             <div class="timer-bar-bg"><div id="timer-fill-lv2" class="timer-fill-pink"></div></div>
@@ -178,7 +192,7 @@
             <div id="lv2-feedback" class="feedback"></div>
         </div>
 
-        <!-- 第三關：永續快問快答 -->
+        <!-- 第三關 -->
         <div id="screen-lv3" class="level-screen">
             <h2>第三關：永續快問快答</h2>
             <div id="quiz-question" class="biz-card">載入中...</div>
@@ -239,6 +253,12 @@
 
         function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
+        // 從主頁到前導圖解頁
+        function goToIntro() {
+            showScreen('screen-intro');
+        }
+
+        // 從圖解頁正式開始遊戲
         function startGame() {
             showScreen('screen-lv1');
             initLv1();
@@ -271,7 +291,7 @@
 
         function checkMatch(selectedCategory, element) {
             if(element.classList.contains('hidden')) return;
-            element.classList.add('clicked'); // 變淺粉色
+            element.classList.add('clicked'); 
 
             const feedback = document.getElementById('lv1-feedback');
             const currentItem = shuffledPuzzle[lv1CurrentIdx];
@@ -311,7 +331,7 @@
 
         function handleBinary(userChoice, element) {
             clearInterval(timerInterval);
-            if(element) element.classList.add('clicked'); // 選中變淺粉色 #F27FB2
+            if(element) element.classList.add('clicked'); 
 
             const q = GAME_CONFIG.binaryQuiz[currentIdx];
             const feedbackEl = document.getElementById('lv2-feedback');
@@ -339,10 +359,10 @@
             container.innerHTML = '';
             q.options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = 'btn-pink'; // 預設粉色 #EC008C
+                btn.className = 'btn-pink'; 
                 btn.innerText = opt.text;
                 btn.onclick = () => {
-                    btn.classList.add('clicked'); // 選中變淺粉色 #F27FB2
+                    btn.classList.add('clicked'); 
                     const feedbackEl = document.getElementById('lv3-feedback');
                     if(opt.correct) {
                         totalScore++; feedbackEl.innerText = "恭喜答對"; feedbackEl.className = "feedback correct";
