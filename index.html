@@ -22,7 +22,7 @@
             font-family: 'Segoe UI', "Microsoft JhengHei", Roboto, sans-serif;
             background-color: var(--white);
             color: var(--charcoal);
-            overflow: hidden; /* 防止全域滾動 */
+            overflow: hidden; 
             user-select: none;
             touch-action: none;
         }
@@ -45,7 +45,6 @@
         
         .score-board { font-size: 1.1rem; color: var(--yfy-pink); margin-bottom: 10px; font-weight: bold; }
 
-        /* 大按鈕樣式 */
         .btn-main {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
             color: white; border: none;
@@ -58,7 +57,6 @@
             flex-shrink: 0;
         }
 
-        /* 遊戲中通用的粉色按鈕 */
         .btn-pink {
             background-color: var(--yfy-pink);
             color: white; border: none;
@@ -78,23 +76,18 @@
             display: none; width: 100%; height: 100%; 
             flex-direction: column; align-items: center; justify-content: center;
             animation: fadeIn 0.4s ease-out;
-            overflow-y: auto; /* 允許單一頁面內容過多時可滾動 */
+            overflow-y: auto;
             padding: 20px 0;
             box-sizing: border-box;
         }
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 簡介頁面專屬：靠上對齊 */
-        #screen-yfy-intro {
-            justify-content: flex-start;
-            padding-top: 5vh;
-        }
+        #screen-yfy-intro { justify-content: flex-start; padding-top: 5vh; }
 
-        /* 簡介圖片大小調整 */
         .info-img {
             max-width: 90%;
-            max-height: 63vh; /* 圖片高度設定為 63vh */
+            max-height: 60vh;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 10px;
@@ -173,9 +166,9 @@
             <button class="btn-main" onclick="startLevel1()">[ 開始遊戲 ]</button>
         </div>
 
-        <!-- 第一關：是非題 -->
+        <!-- 第一關：是非題 (已調整題目與動態標題) -->
         <div id="screen-lv1" class="level-screen">
-            <h2>第一關：以下是否為永豐餘的產品?</h2>
+            <h2 id="lv1-question-title">第一關：載入中...</h2>
             <div class="timer-bar-bg"><div id="timer-fill-lv1" class="timer-fill-pink"></div></div>
             <div id="biz-item-text" class="biz-card">載入中...</div>
             <div class="binary-choice" id="lv1-btns">
@@ -195,7 +188,7 @@
 
         <!-- 第二關：消消樂拼圖 -->
         <div id="screen-lv2" class="level-screen">
-            <h2>第二關：屬於哪一個循環呢?</h2>
+            <h2>第二關：永豐餘五大循環</h2>
             <div class="score-board">剩餘時間: <span id="lv2-timer">20</span>s</div>
             <div class="timer-bar-bg"><div id="timer-fill-lv2" class="timer-fill-pink"></div></div>
             
@@ -232,18 +225,19 @@
     <script>
         const GAME_CONFIG = {
             surveyUrl: "https://www.surveycake.com/s/OYYdG",
+            // 第一關：是非題資料更新
+            binaryQuiz: [
+                { question: "是否為永豐餘的產品?", text: "五月花衛生紙", isTrue: true, correctAns: "是" },
+                { question: "是否為永豐餘的產品?", text: "橘子工坊", isTrue: true, correctAns: "是" },
+                { question: "是否為永豐餘領先業界導入的技術?", text: "SRF固態燃料發電", isTrue: true, correctAns: "是" },
+                { question: "是否為永豐餘發展的事業版圖?", text: "侷限在傳統造紙", isTrue: false, correctAns: "不是" }
+            ],
             puzzleData: [
                 { text: "秸稈資源全利用技術", category: "農廢循環" },
                 { text: "廢水重複利用率達90%以上", category: "水循環" },
                 { text: "97%原料為回收紙", category: "紙的再生循環" },
                 { text: "沼氣發電", category: "生質能循環" },
                 { text: "固碳產業", category: "碳循環" }
-            ],
-            binaryQuiz: [
-                { text: "五月花衛生紙", isTrue: true, correctAns: "是" },
-                { text: "只有傳統造紙", isTrue: false, correctAns: "不是" },
-                { text: "橘子工坊", isTrue: true, correctAns: "是" },
-                { text: "SRF固態燃料發電", isTrue: true, correctAns: "是" }
             ],
             quiz: [
                 {
@@ -274,11 +268,10 @@
         }
 
         function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
-
         function goToSurvey() { window.location.href = GAME_CONFIG.surveyUrl; }
-
         function showYfyIntro() { showScreen('screen-yfy-intro'); }
 
+        // --- 第一關：是非題 (更新邏輯以支援動態標題) ---
         function startLevel1() {
             showScreen('screen-lv1');
             binaryIdx = 0;
@@ -291,6 +284,8 @@
                 return;
             }
             const q = GAME_CONFIG.binaryQuiz[binaryIdx];
+            // 更新標題與內容
+            document.getElementById('lv1-question-title').innerText = "第一關：" + q.question;
             document.getElementById('biz-item-text').innerText = q.text;
             document.getElementById('lv1-feedback').innerText = "";
             document.getElementById('btn-is').classList.remove('clicked');
