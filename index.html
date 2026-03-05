@@ -237,12 +237,12 @@
                 { text: "廢水重複利用率達90%以上", category: "水循環" },
                 { text: "97%原料為回收紙", category: "紙的再生循環" },
                 { text: "沼氣發電", category: "生質能循環" },
-                { text: "固碳產業", category: "碳循環" }
+                { text: "醣經濟與碳管理", category: "碳循環" }
             ],
             quiz: [
                 {
-                    question: "永豐餘綠色發電，主要包含以下何者？",
-                    options: [{ text: "沼氣發電", correct: true }, { text: "核能發電", correct: false }, { text: "火力發電", correct: false }],
+                    question: "永豐餘綠色發電，主要為以下何者？",
+                    options: [{ text: "沼氣發電", correct: true }, { text: "核能發電", correct: false }, { text: "風力發電", correct: false }],
                     correctAns: "沼氣發電"
                 },
                 {
@@ -307,12 +307,12 @@
             const q = GAME_CONFIG.binaryQuiz[binaryIdx];
             const feedbackEl = document.getElementById('lv1-feedback');
             if (userChoice === null) {
-                feedbackEl.innerText = "時間到囉！答案是「" + q.correctAns + "」";
+                feedbackEl.innerText = "時間到囉！答案：「" + q.correctAns + "」";
                 feedbackEl.className = "feedback wrong";
             } else if (userChoice === q.isTrue) {
                 totalScore++; feedbackEl.innerText = "恭喜答對"; feedbackEl.className = "feedback correct";
             } else {
-                feedbackEl.innerText = "答錯囉！答案是「" + q.correctAns + "」";
+                feedbackEl.innerText = "答錯囉！答案：「" + q.correctAns + "」";
                 feedbackEl.className = "feedback wrong";
             }
             setTimeout(() => { binaryIdx++; initBinaryLv(); }, 1500);
