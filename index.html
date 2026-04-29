@@ -8,7 +8,7 @@
         :root {
             --yfy-pink: #EC008C;      /* 核心粉色 */
             --light-pink: #F27FB2;    /* 點擊後淺粉色 */
-            --energy-red: #FF0000;    /* 選項使用的紅色 */
+            --energy-red: #e30505;    /* 選項使用的紅色 */
             --deep-red: #8B0000;      /* 點擊後的深紅 */
             --charcoal: #121212;
             --light-gray: #F5F5F5;
@@ -100,7 +100,7 @@
         <div id="screen-start" class="level-screen active">
             <img src="yfylogo.jpg" alt="永豐餘Logo" class="logo-img" onerror="this.style.display='none'">
             <h1>紙屬於你的挑戰</h1>
-            <p>探索在永續循環中<br>屬於</p>
+            <p>探索在永豐餘中<br>屬於哪一個永續角色</p>
             <br>
             <button class="btn-main" onclick="startQuiz()">[ 開始挑戰 ]</button>
         </div>
@@ -131,7 +131,7 @@
                 q: "最想投入的永續領域？",
                 // Q1 特殊結構：拆分冒號前與後
                 options: [
-                    { label: "纖維研發", desc: "在永豐餘進行纖維抽絲的專業技術", type: "M" },
+                    { label: "纖維研發", desc: "在永豐餘研發纖維抽絲的專業技術", type: "M" },
                     { label: "綠電開發", desc: "在永豐餘可以將餘料轉為循環電力", type: "E" },
                     { label: "智慧管理", desc: "在永豐餘可以用AI管理極大化資源效率", type: "D" }
                 ]
@@ -139,7 +139,7 @@
             {
                 q: "在面對大自然賦予的豐富資源，請問你首選的方向？",
                 options: [
-                    { text: "強化纖維韌性，製作機能布料", type: "M" },
+                    { text: "強化纖維韌性，研發抽絲技術", type: "M" },
                     { text: "提煉木質素進行生質發電，增加發電效能", type: "E" },
                     { text: "建立產能預測數據模型，優化製程", type: "D" }
                 ]
@@ -147,9 +147,9 @@
             {
                 q: "當你看到生產剩下的「餘料」時，最想展現哪種超能力？",
                 options: [
-                    { text: "物質重組：重新提煉，研發成更高級的新型環保纖維", type: "M" },
+                    { text: "物質重組：重新提煉，研發成更永續的新型環保纖維", type: "M" },
                     { text: "能量轉化：轉為強大的綠電，幫城市補給綠色能源", type: "E" },
-                    { text: "AI 領航：用數據預測規律，精準優化製程來達成零浪費", type: "D" }
+                    { text: "AI領航：用數據預測規律，精準優化製程來達成零浪費", type: "D" }
                 ]
             },
             {
