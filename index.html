@@ -32,18 +32,18 @@
             align-items: center; justify-content: center;
             height: 100vh; width: 100vw;
             text-align: center;
-            padding: 10px; box-sizing: border-box;
+            padding: 20px; box-sizing: border-box;
         }
 
         .logo-img {
-            max-width: 180px;
+            max-width: 150px;
             margin-bottom: 10px;
         }
 
         h1 { color: var(--yfy-pink); margin-bottom: 5px; font-size: 1.6rem; }
-        h2 { color: var(--charcoal); font-size: 1.2rem; margin-bottom: 10px; }
+        h2 { color: var(--charcoal); font-size: 1.2rem; margin-bottom: 15px; line-height: 1.4; }
         
-        .score-board { font-size: 1.1rem; color: var(--yfy-pink); margin-bottom: 10px; font-weight: bold; }
+        .progress-text { font-size: 0.9rem; color: #666; margin-bottom: 10px; }
 
         .btn-main {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
@@ -53,23 +53,25 @@
             box-shadow: 0 4px 10px rgba(255,0,0,0.3);
             transition: transform 0.1s;
             margin-top: 10px;
-            z-index: 10;
-            flex-shrink: 0;
         }
 
-        .btn-pink {
-            background-color: var(--yfy-pink);
-            color: white; border: none;
-            padding: 15px 30px; font-size: 1rem; font-weight: bold;
-            border-radius: 50px; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(236, 0, 140, 0.2);
-            transition: background 0.1s, transform 0.1s;
+        .btn-option {
+            background-color: var(--white);
+            color: var(--charcoal);
+            border: 2px solid var(--tech-gray);
+            padding: 15px 20px; font-size: 0.95rem; font-weight: 500;
+            border-radius: 12px; cursor: pointer;
+            transition: all 0.2s;
             width: 100%;
+            margin-bottom: 12px;
+            text-align: left;
+            line-height: 1.4;
         }
         
-        .btn-pink.clicked {
-            background-color: var(--light-pink) !important;
-            box-shadow: none;
+        .btn-option:active, .btn-option.clicked {
+            background-color: var(--yfy-pink);
+            color: white;
+            border-color: var(--yfy-pink);
         }
 
         .level-screen { 
@@ -77,74 +79,17 @@
             flex-direction: column; align-items: center; justify-content: center;
             animation: fadeIn 0.4s ease-out;
             overflow-y: auto;
-            padding: 20px 0;
             box-sizing: border-box;
         }
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        #screen-yfy-intro { justify-content: flex-start; padding-top: 5vh; }
+        .choice-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; }
 
-        .info-img {
-            max-width: 90%;
-            max-height: 60vh;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
-            object-fit: contain;
-        }
-
-        .puzzle-piece {
-            background: var(--yfy-pink);
-            color: white;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            width: 85%;
-            max-width: 320px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .drop-targets {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            width: 100%;
-            max-width: 380px;
-        }
-
-        .target-box {
-            border: 2px solid var(--tech-gray);
-            background: var(--light-gray);
-            border-radius: 10px;
-            padding: 12px 5px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: var(--charcoal);
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .target-box.clicked {
-            background-color: var(--light-pink) !important;
-            color: white !important;
-            border-color: var(--light-pink) !important;
-        }
-        .target-box.hidden { visibility: hidden; pointer-events: none; }
-
-        .timer-bar-bg { width: 85%; height: 10px; background: #EEE; border-radius: 6px; margin: 10px 0 15px 0; overflow: hidden; border: 1px solid #DDD; }
-        .timer-fill-pink { width: 100%; height: 100%; background: var(--yfy-pink); transition: width 0.1s linear; }
-
-        .feedback { font-size: 1.1rem; font-weight: bold; margin-top: 10px; min-height: 1.5rem; }
-        .correct { color: #28a745; }
-        .wrong { color: var(--yfy-pink); }
-
-        .biz-card { font-size: 1.2rem; font-weight: bold; margin: 15px 0; color: var(--charcoal); background: var(--light-gray); padding: 15px; border-radius: 15px; width: 85%; }
-        
-        .binary-choice { display: flex; gap: 15px; width: 90%; max-width: 350px; }
-        .choice-container { display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px; }
+        /* 結果頁面特殊樣式 */
+        .result-role { font-size: 2rem; color: var(--yfy-pink); font-weight: 900; margin: 10px 0; }
+        .result-tag { background: var(--yfy-pink); color: white; padding: 5px 15px; border-radius: 5px; font-size: 1rem; margin-bottom: 15px; }
+        .result-desc { text-align: left; background: var(--light-gray); padding: 20px; border-radius: 15px; font-size: 0.95rem; line-height: 1.6; max-width: 400px; }
     </style>
 </head>
 <body>
@@ -153,255 +98,152 @@
         <!-- 進入頁 -->
         <div id="screen-start" class="level-screen active">
             <img src="yfylogo.jpg" alt="永豐餘Logo" class="logo-img" onerror="this.style.display='none'">
-            <h1>紙屬於你的挑戰賽</h1>
-            <p>啟動循環經濟<br>挑戰你的永續知識量</p>
+            <h1>職能基因檢測</h1>
+            <p>探索你在永續循環經濟中<br>扮演的關鍵角色</p>
             <br>
-            <button class="btn-main" onclick="showYfyIntro()">[ 立即啟動 ]</button>
+            <button class="btn-main" onclick="startQuiz()">[ 開始檢測 ]</button>
         </div>
 
-        <!-- 永豐餘簡介頁面 -->
-        <div id="screen-yfy-intro" class="level-screen">
-            <h2 style="color: var(--yfy-pink);">關於永豐餘</h2>
-            <img src="yfyintro.jpg" alt="永豐餘簡介" class="info-img">
-            <button class="btn-main" onclick="startLevel1()">[ 開始遊戲 ]</button>
-        </div>
-
-        <!-- 第一關：是非題 (已調整題目與動態標題) -->
-        <div id="screen-lv1" class="level-screen">
-            <h2 id="lv1-question-title">第一關：載入中...</h2>
-            <div class="timer-bar-bg"><div id="timer-fill-lv1" class="timer-fill-pink"></div></div>
-            <div id="biz-item-text" class="biz-card">載入中...</div>
-            <div class="binary-choice" id="lv1-btns">
-                <button class="btn-pink" id="btn-is" onclick="handleBinary(true, this)">是</button>
-                <button class="btn-pink" id="btn-not" onclick="handleBinary(false, this)">不是</button>
+        <!-- 題目頁面 (通用樣式) -->
+        <div id="screen-quiz" class="level-screen">
+            <div class="progress-text" id="progress">Q1 / 5</div>
+            <h2 id="question-text">題目載入中...</h2>
+            <div class="choice-container" id="options-container">
+                <!-- 選項動態生成 -->
             </div>
-            <div id="lv1-feedback" class="feedback"></div>
         </div>
 
-        <!-- 中場前導：五大循環圖解 -->
-        <div id="screen-intro" class="level-screen">
-            <h2>認識永豐餘五大循環</h2>
-            <img src="5cycle.jpg" alt="五大循環圖" class="info-img">
-            <p style="font-size: 0.9rem; margin-bottom: 10px;">請先瀏覽圖片內容</p>
-            <button class="btn-main" onclick="startLevel2()">[ 下一步 ]</button>
-        </div>
-
-        <!-- 第二關：消消樂拼圖 -->
-        <div id="screen-lv2" class="level-screen">
-            <h2>第二關：永豐餘五大循環</h2>
-            <div class="score-board">剩餘時間: <span id="lv2-timer">20</span>s</div>
-            <div class="timer-bar-bg"><div id="timer-fill-lv2" class="timer-fill-pink"></div></div>
-            
-            <div id="current-puzzle" class="puzzle-piece">載入中...</div>
-
-            <div class="drop-targets" id="lv2-answer-zone">
-                <div class="target-box" onclick="checkMatch('農廢循環', this)">農廢循環</div>
-                <div class="target-box" onclick="checkMatch('水循環', this)">水循環</div>
-                <div class="target-box" onclick="checkMatch('紙的再生循環', this)">紙的再生循環</div>
-                <div class="target-box" onclick="checkMatch('生質能循環', this)">生質能循環</div>
-                <div class="target-box" onclick="checkMatch('碳循環', this)">碳循環</div>
-            </div>
-            <div id="lv2-feedback" class="feedback"></div>
-        </div>
-
-        <!-- 第三關：快問快答 -->
-        <div id="screen-lv3" class="level-screen">
-            <h2>第三關：永續快問快答</h2>
-            <div id="quiz-question" class="biz-card">載入中...</div>
-            <div class="choice-container" id="quiz-options"></div>
-            <div id="lv3-feedback" class="feedback"></div>
-        </div>
-
-        <!-- 結束頁 -->
+        <!-- 結束頁 / 結果頁 -->
         <div id="screen-result" class="level-screen">
-            <h1 style="color:var(--yfy-pink)">MISSION COMPLETE</h1>
-            <div style="font-size: 1.8rem; margin: 15px 0; color: var(--charcoal);">最終總分：<span id="total-score" style="color:var(--yfy-pink); font-size: 2.5rem;">0</span></div>
-            <p>恭喜完成挑戰！<br>點擊下方填寫問卷領取好禮🎁</p>
+            <div style="font-size: 1rem; color: #666;">檢測結果</div>
+            <div id="role-name" class="result-role">角色名稱</div>
+            <div id="role-tag" class="result-tag">【人才類別】</div>
+            <div id="role-desc" class="result-desc">特質描述載入中...</div>
             <br>
-            <button class="btn-main" onclick="goToSurvey()">[ 填寫問卷 ]</button>
+            <button class="btn-main" onclick="goToSurvey()">[ 填寫問卷領取好禮 ]</button>
         </div>
     </div>
 
     <script>
-        const GAME_CONFIG = {
-            surveyUrl: "https://www.surveycake.com/s/OYYdG",
-            // 第一關：是非題資料更新
-            binaryQuiz: [
-                { question: "是否為永豐餘的產品?", text: "五月花衛生紙", isTrue: true, correctAns: "是" },
-                { question: "是否為永豐餘的產品?", text: "橘子工坊", isTrue: true, correctAns: "是" },
-                { question: "是否為永豐餘領先業界導入的技術?", text: "SRF固態燃料發電", isTrue: true, correctAns: "是" },
-                { question: "是否為永豐餘發展的事業版圖?", text: "侷限在傳統造紙", isTrue: false, correctAns: "不是" }
-            ],
-            puzzleData: [
-                { text: "秸稈資源全利用技術", category: "農廢循環" },
-                { text: "廢水重複利用率達90%以上", category: "水循環" },
-                { text: "97%原料為回收紙", category: "紙的再生循環" },
-                { text: "沼氣發電", category: "生質能循環" },
-                { text: "醣經濟與碳管理", category: "碳循環" }
-            ],
-            quiz: [
-                {
-                    question: "永豐餘綠色發電，主要為以下何者？",
-                    options: [{ text: "沼氣發電", correct: true }, { text: "核能發電", correct: false }, { text: "風力發電", correct: false }],
-                    correctAns: "沼氣發電"
-                },
-                {
-                    question: "永續發展中，最重要的核心是什麼？",
-                    options: [{ text: "持續增加碳排放", correct: false }, { text: "企業快速成長獲利", correct: false }, { text: "循環經濟與社會責任", correct: true }],
-                    correctAns: "循環經濟與社會責任"
-                }
-            ]
-        };
+        const QUIZ_DATA = [
+            {
+                q: "Q1：最想投入的永續領域？",
+                options: [
+                    { text: "(A) 纖維改質：研發 100% 分解包材", type: "M" },
+                    { text: "(B) 綠電開發：將餘料轉為循環電力", type: "E" },
+                    { text: "(C) 智慧管理：用 AI 極大化資源效率", type: "D" }
+                ]
+            },
+            {
+                q: "Q2：面對大自然賦予的資源，請問你首選的方向？",
+                options: [
+                    { text: "(A) 強化纖維韌性，製作機能布料", type: "M" },
+                    { text: "(B) 提煉木質素進行生質發電，增加發電效能", type: "E" },
+                    { text: "(C) 建立產能預測數據模型，優化製程", type: "D" }
+                ]
+            },
+            {
+                q: "Q3：當你看到生產剩下的「餘料」時，你最想展現哪種超能力？",
+                options: [
+                    { text: "(A) 物質重組：重新提煉，研發成更高級的新型環保纖維", type: "M" },
+                    { text: "(B) 能量轉化：轉為強大的綠電，幫城市補給綠色能源", type: "E" },
+                    { text: "(C) AI 領航：用數據預測規律，精準優化製程來達成零浪費", type: "D" }
+                ]
+            },
+            {
+                q: "Q4：最想負責智慧工廠哪個單位？",
+                options: [
+                    { text: "(A) 研發中心：研發生物化學並精進技術", type: "M" },
+                    { text: "(B) 綠電中心：高效管控綠色發電系統", type: "E" },
+                    { text: "(C) 大數據中心：用機器學習預測產能及維持品質", type: "D" }
+                ]
+            },
+            {
+                q: "Q5：你認為人才最重要的特質排序？",
+                options: [
+                    { text: "(A) 改變物質特性的「研發力」", type: "M" },
+                    { text: "(B) 建構循環系統的「整合力」", type: "E" },
+                    { text: "(C) 洞察數據邏輯的「分析力」", type: "D" }
+                ]
+            }
+        ];
 
+        const SCORING = { M: 101, E: 100, D: 1 };
+        const SURVEY_URL = "https://www.surveycake.com/s/OYYdG";
+
+        let currentQ = 0;
         let totalScore = 0;
-        let lv2CurrentIdx = 0; 
-        let lv2TimerVal = 20;
-        let binaryIdx = 0;     
-        let quizIdx = 0;       
-        let timerInterval;
-        let shuffledPuzzle = [];
 
         function showScreen(id) {
             document.querySelectorAll('.level-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.getElementById(id).scrollTop = 0;
         }
 
-        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
-        function goToSurvey() { window.location.href = GAME_CONFIG.surveyUrl; }
-        function showYfyIntro() { showScreen('screen-yfy-intro'); }
-
-        // --- 第一關：是非題 (更新邏輯以支援動態標題) ---
-        function startLevel1() {
-            showScreen('screen-lv1');
-            binaryIdx = 0;
-            initBinaryLv();
+        function startQuiz() {
+            currentQ = 0;
+            totalScore = 0;
+            showScreen('screen-quiz');
+            renderQuestion();
         }
 
-        function initBinaryLv() {
-            if (binaryIdx >= GAME_CONFIG.binaryQuiz.length) {
-                showScreen('screen-intro');
-                return;
-            }
-            const q = GAME_CONFIG.binaryQuiz[binaryIdx];
-            // 更新標題與內容
-            document.getElementById('lv1-question-title').innerText = "第一關：" + q.question;
-            document.getElementById('biz-item-text').innerText = q.text;
-            document.getElementById('lv1-feedback').innerText = "";
-            document.getElementById('btn-is').classList.remove('clicked');
-            document.getElementById('btn-not').classList.remove('clicked');
+        function renderQuestion() {
+            const data = QUIZ_DATA[currentQ];
+            document.getElementById('progress').innerText = `Q${currentQ + 1} / 5`;
+            document.getElementById('question-text').innerText = data.q;
             
-            let timeLeft = 4.0;
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                timeLeft -= 0.05;
-                document.getElementById('timer-fill-lv1').style.width = (timeLeft / 4 * 100) + '%';
-                if (timeLeft <= 0) handleBinary(null, null); 
-            }, 50);
-        }
-
-        function handleBinary(userChoice, element) {
-            clearInterval(timerInterval);
-            if(element) element.classList.add('clicked'); 
-
-            const q = GAME_CONFIG.binaryQuiz[binaryIdx];
-            const feedbackEl = document.getElementById('lv1-feedback');
-            if (userChoice === null) {
-                feedbackEl.innerText = "時間到囉！答案：「" + q.correctAns + "」";
-                feedbackEl.className = "feedback wrong";
-            } else if (userChoice === q.isTrue) {
-                totalScore++; feedbackEl.innerText = "恭喜答對"; feedbackEl.className = "feedback correct";
-            } else {
-                feedbackEl.innerText = "答錯囉！答案：「" + q.correctAns + "」";
-                feedbackEl.className = "feedback wrong";
-            }
-            setTimeout(() => { binaryIdx++; initBinaryLv(); }, 1500);
-        }
-
-        function startLevel2() {
-            showScreen('screen-lv2');
-            initPuzzleLv();
-        }
-
-        function initPuzzleLv() {
-            shuffledPuzzle = shuffle([...GAME_CONFIG.puzzleData]);
-            lv2CurrentIdx = 0;
-            lv2TimerVal = 20;
-            document.querySelectorAll('#lv2-answer-zone .target-box').forEach(el => el.classList.remove('hidden', 'clicked'));
-            updatePuzzleDisplay();
-            
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                lv2TimerVal -= 0.1;
-                document.getElementById('lv2-timer').innerText = Math.ceil(lv2TimerVal);
-                document.getElementById('timer-fill-lv2').style.width = (lv2TimerVal / 20 * 100) + '%';
-                if (lv2TimerVal <= 0) { clearInterval(timerInterval); finishLv2(); }
-            }, 100);
-        }
-
-        function updatePuzzleDisplay() {
-            if (lv2CurrentIdx < shuffledPuzzle.length) {
-                document.getElementById('current-puzzle').innerText = shuffledPuzzle[lv2CurrentIdx].text;
-            } else { 
-                clearInterval(timerInterval); 
-                setTimeout(finishLv2, 500); 
-            }
-        }
-
-        function checkMatch(selectedCategory, element) {
-            if(element.classList.contains('hidden')) return;
-            element.classList.add('clicked'); 
-
-            const feedback = document.getElementById('lv2-feedback');
-            const currentItem = shuffledPuzzle[lv2CurrentIdx];
-
-            if (selectedCategory === currentItem.category) {
-                totalScore++;
-                feedback.innerText = "恭喜答對"; feedback.className = "feedback correct";
-                setTimeout(() => {
-                    element.classList.add('hidden');
-                    feedback.innerText = ""; lv2CurrentIdx++; updatePuzzleDisplay();
-                }, 400);
-            } else {
-                feedback.innerText = "答錯囉！"; feedback.className = "feedback wrong";
-                setTimeout(() => { element.classList.remove('clicked'); feedback.innerText = ""; }, 400);
-            }
-        }
-
-        function finishLv2() {
-            showScreen('screen-lv3');
-            quizIdx = 0;
-            initQuizLv();
-        }
-
-        function initQuizLv() {
-            if (quizIdx >= GAME_CONFIG.quiz.length) {
-                document.getElementById('total-score').innerText = totalScore; 
-                showScreen('screen-result'); 
-                return;
-            }
-            const q = GAME_CONFIG.quiz[quizIdx];
-            document.getElementById('quiz-question').innerText = q.question;
-            document.getElementById('lv3-feedback').innerText = "";
-            const container = document.getElementById('quiz-options');
+            const container = document.getElementById('options-container');
             container.innerHTML = '';
-            q.options.forEach(opt => {
+            
+            data.options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = 'btn-pink'; 
+                btn.className = 'btn-option';
                 btn.innerText = opt.text;
-                btn.onclick = () => {
-                    btn.classList.add('clicked'); 
-                    const feedbackEl = document.getElementById('lv3-feedback');
-                    if(opt.correct) {
-                        totalScore++; feedbackEl.innerText = "恭喜答對"; feedbackEl.className = "feedback correct";
-                    } else {
-                        feedbackEl.innerText = "答錯囉！答案是「" + q.correctAns + "」";
-                        feedbackEl.className = "feedback wrong";
-                    }
-                    setTimeout(() => { quizIdx++; initQuizLv(); }, 1500);
-                };
+                btn.onclick = () => selectOption(opt.type, btn);
                 container.appendChild(btn);
             });
+        }
+
+        function selectOption(type, btnEl) {
+            btnEl.classList.add('clicked');
+            totalScore += SCORING[type];
+            
+            setTimeout(() => {
+                currentQ++;
+                if (currentQ < QUIZ_DATA.length) {
+                    renderQuestion();
+                } else {
+                    showResult();
+                }
+            }, 300);
+        }
+
+        function showResult() {
+            let role = "";
+            let tag = "";
+            let desc = "";
+
+            if (totalScore >= 303) {
+                role = "纖維魔法師 (M)";
+                tag = "【材料創新人才】";
+                desc = "你對物質特性有卓越洞察力，擅長纖維抽絲與改質技術。你將引領材料革命，將天然資源轉化為高產值產品，讓「醣經濟」取代石化塑膠。";
+            } else if (totalScore >= 105) {
+                role = "綠能鏈金術師 (E)";
+                tag = "【能源循環人才】";
+                desc = "你具備建構循環系統的宏觀思維，擅長木質素發電與綠能管控。你能將餘料點石成金轉化為動力，是達成碳中和目標的關鍵實踐家。";
+            } else {
+                role = "數位預言家 (D)";
+                tag = "【AI 與數據人才】";
+                desc = "你習慣用數據說話，擅長透過機器學習與數據模型洞察規律。你是數位轉型的關鍵，能將龐雜數據轉化為決策力，讓生產精準且智慧。";
+            }
+
+            document.getElementById('role-name').innerText = role;
+            document.getElementById('role-tag').innerText = tag;
+            document.getElementById('role-desc').innerText = desc;
+            showScreen('screen-result');
+        }
+
+        function goToSurvey() {
+            window.location.href = SURVEY_URL;
         }
     </script>
 </body>
