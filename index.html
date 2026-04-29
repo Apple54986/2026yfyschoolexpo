@@ -8,8 +8,8 @@
         :root {
             --yfy-pink: #EC008C;      /* 核心粉色 */
             --light-pink: #F27FB2;    /* 點擊後淺粉色 */
-            --energy-red: #FF0000;    /* 封面與結尾用的紅色 */
-            --deep-red: #8B0000;
+            --energy-red: #FF0000;    /* 選項使用的紅色 */
+            --deep-red: #8B0000;      /* 點擊後的深紅 */
             --charcoal: #121212;
             --light-gray: #F5F5F5;
             --tech-gray: #CCCCCC;
@@ -55,10 +55,11 @@
             margin-top: 10px;
         }
 
+        /* 修改：選項區塊改成紅色 */
         .btn-option {
-            background-color: var(--white);
-            color: var(--charcoal);
-            border: 2px solid var(--tech-gray);
+            background-color: var(--energy-red);
+            color: white;
+            border: none;
             padding: 15px 20px; font-size: 0.95rem; font-weight: 500;
             border-radius: 12px; cursor: pointer;
             transition: all 0.2s;
@@ -66,12 +67,12 @@
             margin-bottom: 12px;
             text-align: left;
             line-height: 1.4;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
         .btn-option:active, .btn-option.clicked {
-            background-color: var(--yfy-pink);
-            color: white;
-            border-color: var(--yfy-pink);
+            background-color: var(--deep-red);
+            transform: scale(0.98);
         }
 
         .level-screen { 
@@ -86,7 +87,7 @@
 
         .choice-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; }
 
-        /* 結果頁面特殊樣式 */
+        /* 結果頁面樣式 */
         .result-role { font-size: 2rem; color: var(--yfy-pink); font-weight: 900; margin: 10px 0; }
         .result-tag { background: var(--yfy-pink); color: white; padding: 5px 15px; border-radius: 5px; font-size: 1rem; margin-bottom: 15px; }
         .result-desc { text-align: left; background: var(--light-gray); padding: 20px; border-radius: 15px; font-size: 0.95rem; line-height: 1.6; max-width: 400px; }
@@ -99,12 +100,12 @@
         <div id="screen-start" class="level-screen active">
             <img src="yfylogo.jpg" alt="永豐餘Logo" class="logo-img" onerror="this.style.display='none'">
             <h1>紙屬於你的挑戰</h1>
-            <p>探索在永續循環中<br>扮演的重點角色</p>
+            <p>探索在永續循環中<br>屬於</p>
             <br>
             <button class="btn-main" onclick="startQuiz()">[ 開始挑戰 ]</button>
         </div>
 
-        <!-- 題目頁面 (通用樣式) -->
+        <!-- 題目頁面 -->
         <div id="screen-quiz" class="level-screen">
             <div class="progress-text" id="progress">Q1 / 5</div>
             <h2 id="question-text">題目載入中...</h2>
@@ -128,10 +129,11 @@
         const QUIZ_DATA = [
             {
                 q: "最想投入的永續領域？",
+                // Q1 特殊結構：拆分冒號前與後
                 options: [
-                    { text: "纖維改質：研發 100% 分解包材", type: "M" },
-                    { text: "綠電開發：將餘料轉為循環電力", type: "E" },
-                    { text: "智慧管理：用 AI 極大化資源效率", type: "D" }
+                    { label: "纖維研發", desc: "在永豐餘進行纖維抽絲的專業技術", type: "M" },
+                    { label: "綠電開發", desc: "在永豐餘可以將餘料轉為循環電力", type: "E" },
+                    { label: "智慧管理", desc: "在永豐餘可以用AI管理極大化資源效率", type: "D" }
                 ]
             },
             {
@@ -197,15 +199,33 @@
             data.options.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'btn-option';
-                btn.innerText = opt.text;
-                btn.onclick = () => selectOption(opt.type, btn);
+                
+                // Q1 初始只顯示 Label
+                if (currentQ === 0) {
+                    btn.innerText = opt.label;
+                } else {
+                    btn.innerText = opt.text;
+                }
+
+                btn.onclick = () => selectOption(opt, btn);
                 container.appendChild(btn);
             });
         }
 
-        function selectOption(type, btnEl) {
+        function selectOption(opt, btnEl) {
+            // 防止重複點擊
+            if (btnEl.classList.contains('clicked')) return;
+            
             btnEl.classList.add('clicked');
-            totalScore += SCORING[type];
+            totalScore += SCORING[opt.type];
+            
+            let delay = 300; // 預設跳轉時間
+
+            // Q1 的特殊邏輯：顯示說明並停留 2 秒
+            if (currentQ === 0) {
+                btnEl.innerText = `${opt.label}：${opt.desc}`;
+                delay = 2000; 
+            }
             
             setTimeout(() => {
                 currentQ++;
@@ -214,7 +234,7 @@
                 } else {
                     showResult();
                 }
-            }, 300);
+            }, delay);
         }
 
         function showResult() {
