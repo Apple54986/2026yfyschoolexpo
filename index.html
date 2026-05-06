@@ -35,14 +35,13 @@
             padding: 10px; box-sizing: border-box;
         }
 
-        .logo-img { max-width: 150px; margin-bottom: 10px; }
-        .info-img { max-width: 90%; max-height: 45vh; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .logo-img { max-width: 140px; margin-bottom: 5px; }
+        .info-img { max-width: 90%; max-height: 40vh; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-        h1 { color: var(--yfy-pink); margin-bottom: 5px; font-size: 1.6rem; }
-        h2 { color: var(--charcoal); font-size: 1.2rem; margin-bottom: 15px; line-height: 1.4; }
+        h1 { color: var(--yfy-pink); margin-bottom: 5px; font-size: 1.4rem; }
+        h2 { color: var(--charcoal); font-size: 1.1rem; margin-bottom: 10px; line-height: 1.3; }
         
-        .progress-text { font-size: 0.9rem; color: #666; margin-bottom: 10px; }
-        .score-board { font-size: 1rem; color: var(--yfy-pink); margin-bottom: 10px; font-weight: bold; }
+        .progress-text { font-size: 0.8rem; color: #666; margin-bottom: 5px; }
 
         .btn-main {
             background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
@@ -50,7 +49,7 @@
             padding: 12px 35px; font-size: 1rem; font-weight: bold;
             border-radius: 50px; cursor: pointer;
             box-shadow: 0 4px 10px rgba(255,0,0,0.3);
-            transition: transform 0.1s; margin-top: 10px;
+            margin-top: 10px;
         }
 
         .btn-option {
@@ -58,57 +57,62 @@
             color: white; border: none;
             padding: 15px 20px; font-size: 0.95rem; font-weight: 500;
             border-radius: 12px; cursor: pointer;
-            transition: all 0.2s; width: 100%; margin-bottom: 12px;
+            width: 100%; margin-bottom: 10px;
             text-align: left; line-height: 1.4;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .btn-option.clicked { background-color: var(--deep-red) !important; }
 
-        /* 第二關特定樣式 */
-        .puzzle-piece {
-            background: var(--yfy-pink);
-            color: white; padding: 20px; border-radius: 12px; font-weight: bold;
-            font-size: 1.1rem; width: 85%; margin-bottom: 20px;
-        }
-        .drop-targets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 380px; }
-        .target-box {
-            border: 2px solid var(--tech-gray); background: var(--light-gray);
-            border-radius: 10px; padding: 12px 5px; font-size: 0.85rem; font-weight: bold;
-            cursor: pointer;
-        }
-        .target-box.clicked { background-color: var(--energy-red); color: white; border-color: var(--energy-red); }
-        .target-box.hidden { visibility: hidden; pointer-events: none; }
-
-        /* 排序題目樣式 */
-        .sortable-list { width: 100%; max-width: 320px; margin: 0 auto; }
-        .sort-item {
+        /* --- 排序題專用樣式 --- */
+        .sort-instruction { font-size: 0.85rem; color: var(--yfy-pink); margin-bottom: 15px; }
+        .drag-pool { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; width: 100%; }
+        .drag-item {
             background: var(--energy-red); color: white;
-            padding: 15px; margin-bottom: 10px; border-radius: 10px;
-            cursor: grab; display: flex; align-items: center; justify-content: space-between;
-            font-weight: bold; position: relative; touch-action: none;
+            width: 90px; height: 90px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: bold; padding: 5px;
+            cursor: grab; touch-action: none; text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative; z-index: 10;
         }
-        .sort-item::before { content: "≡"; font-size: 1.5rem; margin-right: 10px; }
-        .sort-item.dragging { opacity: 0.5; background: var(--deep-red); }
+        .drop-zones-container { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; }
+        .slot {
+            height: 60px; border: 2px dashed var(--tech-gray);
+            border-radius: 10px; background: var(--light-gray);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; transition: 0.2s;
+        }
+        .slot::before {
+            content: attr(data-rank); position: absolute; left: 10px;
+            font-size: 1.5rem; font-weight: 900; color: rgba(0,0,0,0.1);
+        }
+        .slot.highlight { border-color: var(--yfy-pink); background: #fff1f9; }
+        .slot .drag-item { width: 95%; height: 80%; cursor: pointer; }
+
+        /* 第二關拼圖樣式 */
+        .puzzle-piece { background: var(--yfy-pink); color: white; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 1rem; width: 85%; margin-bottom: 15px; }
+        .drop-targets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 380px; }
+        .target-box { border: 2px solid var(--tech-gray); background: var(--light-gray); border-radius: 10px; padding: 10px 5px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
+        .target-box.clicked { background-color: var(--energy-red); color: white; }
+        .target-box.hidden { visibility: hidden; }
 
         .timer-bar-bg { width: 85%; height: 8px; background: #EEE; border-radius: 6px; margin-bottom: 15px; overflow: hidden; }
         .timer-fill { width: 100%; height: 100%; background: var(--yfy-pink); transition: width 0.1s linear; }
-        .feedback { font-size: 1rem; font-weight: bold; margin-top: 10px; height: 1.5rem; }
+        .feedback { font-size: 1rem; font-weight: bold; margin-top: 5px; height: 1.2rem; }
         .correct { color: #28a745; }
         .wrong { color: var(--energy-red); }
-
-        .biz-card { font-size: 1.1rem; font-weight: bold; margin: 15px 0; color: var(--charcoal); background: var(--light-gray); padding: 15px; border-radius: 15px; width: 85%; }
 
         .level-screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; animation: fadeIn 0.4s ease-out; box-sizing: border-box; }
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 結果頁樣式整合 */
+        /* 結果頁樣式 */
         .result-role { font-size: 1.8rem; color: var(--yfy-pink); font-weight: 900; margin: 5px 0; }
         .result-tag { background: var(--yfy-pink); color: white; padding: 5px 15px; border-radius: 5px; font-size: 0.9rem; margin-bottom: 10px; }
         .result-desc { text-align: left; background: var(--light-gray); padding: 15px; border-radius: 15px; font-size: 0.85rem; line-height: 1.5; width: 85%; margin-bottom: 15px; }
-        .score-summary { width: 85%; background: var(--white); border: 2px dashed var(--yfy-pink); border-radius: 15px; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-around; }
-        .score-item { display: flex; flex-direction: column; font-size: 0.8rem; }
-        .score-val { font-size: 1.2rem; font-weight: bold; color: var(--energy-red); }
+        .score-summary { width: 85%; background: var(--white); border: 2px dashed var(--yfy-pink); border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+        .score-item { display: flex; flex-direction: column; }
+        .score-label { font-size: 0.9rem; color: #666; margin-bottom: 5px; }
+        .score-val { font-size: 1.8rem; font-weight: bold; color: var(--energy-red); }
     </style>
 </head>
 <body>
@@ -128,9 +132,18 @@
             <div class="progress-text" id="lv1-progress">Q1 / 5</div>
             <h2 id="lv1-question">題目載入中...</h2>
             <div class="choice-container" id="lv1-options" style="width: 100%; max-width: 400px;"></div>
-            <!-- Q5 排序專用容器 -->
-            <div id="sort-container" class="sortable-list" style="display:none;"></div>
-            <button id="btn-sort-confirm" class="btn-main" style="display:none;" onclick="confirmSort()">[ 確認排序 ]</button>
+
+            <!-- Q5 拖曳排序容器 -->
+            <div id="sort-ui" style="display:none; width: 100%; flex-direction: column; align-items: center;">
+                <p class="sort-instruction">請將上方方塊拖入下方框框進行 1-3 排序</p>
+                <div class="drag-pool" id="drag-pool"></div>
+                <div class="drop-zones-container">
+                    <div class="slot" data-rank="1" id="slot-1"></div>
+                    <div class="slot" data-rank="2" id="slot-2"></div>
+                    <div class="slot" data-rank="3" id="slot-3"></div>
+                </div>
+                <button class="btn-main" id="btn-sort-confirm" style="margin-top:20px; opacity: 0.5;" disabled onclick="confirmSort()">[ 確認排序 ]</button>
+            </div>
         </div>
 
         <!-- 第二關前導頁 -->
@@ -159,8 +172,8 @@
         <!-- 第三關：快問快答 -->
         <div id="screen-lv3" class="level-screen">
             <h2>第三關：永續快問快答</h2>
-            <div id="quiz-question" class="biz-card">載入中...</div>
-            <div class="choice-container" id="lv3-options" style="width: 100%; max-width: 400px;"></div>
+            <div id="quiz-question" style="font-size:1rem; font-weight:bold; background:#f5f5f5; padding:15px; border-radius:15px; width:85%; margin-bottom:15px;">載入中...</div>
+            <div class="choice-container" id="lv3-options" style="width: 100%; max-width: 400px; display: flex; flex-direction: column;"></div>
             <div id="lv3-feedback" class="feedback"></div>
         </div>
 
@@ -171,10 +184,11 @@
             <div id="role-desc" class="result-desc">描述載入中...</div>
             
             <div class="score-summary">
-                <div class="score-item"><span>拼圖答對</span><span class="score-val" id="res-lv2">0</span></div>
-                <div class="score-item"><span>快問快答</span><span class="score-val" id="res-lv3">0</span></div>
+                <div class="score-item">
+                    <span class="score-label">遊戲挑戰總分 (拼圖+快問快答)</span>
+                    <span class="score-val" id="combined-score">0 / 7</span>
+                </div>
             </div>
-
             <button class="btn-main" onclick="goToSurvey()">[ 填寫問卷領取好禮 ]</button>
         </div>
     </div>
@@ -183,18 +197,35 @@
         const LV1_DATA = [
             { q: "最想投入的永續領域？", options: [{ label: "纖維研發", desc: "在永豐餘研發纖維抽絲的專業技術", type: "M" }, { label: "綠電開發", desc: "在永豐餘可以將餘料轉為循環電力", type: "E" }, { label: "智慧管理", desc: "在永豐餘可以用AI管理極大化資源效率", type: "D" }] },
             { q: "在面對大自然豐富資源，請問你首選的方向？", options: [{ text: "強化纖維韌性，研發抽絲技術", type: "M" }, { text: "提煉木質素進行生質發電，增加效能", type: "E" }, { text: "建立產能預測數據模型，優化製程", type: "D" }] },
-            { q: "當看到剩下的「餘料」時，最想展現哪種超能力？", options: [{ text: "物質重組：研發成更永續的環保纖維", type: "M" }, { text: "能量轉化：轉為綠電，幫城市補給能源", type: "E" }, { text: "AI領航：用數據預測規律，達成零浪費", type: "D" }] },
+            { q: "當你看到生產剩下的「餘料」時，最想展現哪種超能力？", options: [{ text: "物質重組：研發成更永續的環保纖維", type: "M" }, { text: "能量轉化：轉為綠電，幫城市補給能源", type: "E" }, { text: "AI領航：用數據預測規律，達成零浪費", type: "D" }] },
             { q: "最想加入智慧工廠哪個單位？", options: [{ text: "研發中心：研發生物化學並精進技術", type: "M" }, { text: "綠電中心：高效管控綠色發電系統", type: "E" }, { text: "數據中心：用機器學習預測產能", type: "D" }] },
-            { q: "你認為人才最重要的特質排序？(請拖曳排序)", type: "sort", options: [{ text: "改變物質特性的「研發力」", type: "M" }, { text: "建構循環系統的「整合力」", type: "E" }, { text: "洞察數據邏輯的「分析力」", type: "D" }] }
+            { q: "你認為人才最重要的特質排序？", isSort: true, options: [{ text: "研發力", type: "M" }, { text: "整合力", type: "E" }, { text: "分析力", type: "D" }] }
         ];
 
-        const LV2_DATA = [{ text: "秸稈資源全利用技術", category: "農廢循環" }, { text: "廢水重複利用率達90%以上", category: "水循環" }, { text: "97%原料為回收紙", category: "紙的再生循環" }, { text: "沼氣發電", category: "生質能循環" }, { text: "醣經濟與碳管理", category: "碳循環" }];
+        const LV2_DATA = [{ text: "秸稈資源全利用技術", cat: "農廢循環" }, { text: "廢水重複利用率達90%以上", cat: "水循環" }, { text: "97%原料為回收紙", cat: "紙的再生循環" }, { text: "沼氣發電", cat: "生質能循環" }, { text: "醣經濟與碳管理", cat: "碳循環" }];
+        
         const LV3_DATA = [
-            { question: "永豐餘綠色發電，主要為以下何者？", options: [{ text: "沼氣發電", correct: true }, { text: "核能發電", correct: false }], correctAns: "沼氣發電" },
-            { question: "永續發展中，最重要的核心是什麼？", options: [{ text: "持續增加碳排放", correct: false }, { text: "循環經濟與社會責任", correct: true }], correctAns: "循環經濟與社會責任" }
+            { 
+                q: "永豐餘綠色發電，主要為以下何者？", 
+                opts: [
+                    { t: "沼氣發電", c: true }, 
+                    { t: "核能發電", c: false }, 
+                    { t: "風力發電", c: false }
+                ], 
+                ans: "沼氣發電" 
+            },
+            { 
+                q: "永續發展中，最重要的核心是什麼？", 
+                opts: [
+                    { t: "持續增加碳排放", c: false }, 
+                    { t: "企業快速成長獲利", c: false }, 
+                    { t: "循環經濟與社會責任", c: true }
+                ], 
+                ans: "循環經濟與社會責任" 
+            }
         ];
 
-        let totalScore = 0, lv1Idx = 0, lv2Idx = 0, lv3Idx = 0;
+        let totalWeight = 0, lv1Idx = 0, lv2Idx = 0, lv3Idx = 0;
         let lv2Correct = 0, lv3Correct = 0;
         let timerInterval;
 
@@ -204,36 +235,21 @@
         }
 
         // --- 第一關 ---
-        function startLv1() { lv1Idx = 0; totalScore = 0; showScreen('screen-lv1'); renderLv1(); }
+        function startLv1() { lv1Idx = 0; totalWeight = 0; showScreen('screen-lv1'); renderLv1(); }
 
         function renderLv1() {
             const data = LV1_DATA[lv1Idx];
             document.getElementById('lv1-progress').innerText = `Q${lv1Idx + 1} / 5`;
             document.getElementById('lv1-question').innerText = data.q;
-            
-            const optionsContainer = document.getElementById('lv1-options');
-            const sortContainer = document.getElementById('sort-container');
-            const confirmBtn = document.getElementById('btn-sort-confirm');
+            const optContainer = document.getElementById('lv1-options');
+            const sortUI = document.getElementById('sort-ui');
 
-            if (data.type === 'sort') {
-                optionsContainer.style.display = 'none';
-                sortContainer.style.display = 'block';
-                confirmBtn.style.display = 'inline-block';
-                sortContainer.innerHTML = '';
-                data.options.forEach(opt => {
-                    const div = document.createElement('div');
-                    div.className = 'sort-item';
-                    div.innerText = opt.text;
-                    div.dataset.type = opt.type;
-                    div.draggable = true;
-                    sortContainer.appendChild(div);
-                });
-                addSortEvents(sortContainer);
+            if (data.isSort) {
+                optContainer.style.display = 'none'; sortUI.style.display = 'flex';
+                initSortGame(data.options);
             } else {
-                optionsContainer.style.display = 'block';
-                sortContainer.style.display = 'none';
-                confirmBtn.style.display = 'none';
-                optionsContainer.innerHTML = '';
+                optContainer.style.display = 'block'; sortUI.style.display = 'none';
+                optContainer.innerHTML = '';
                 data.options.forEach(opt => {
                     const btn = document.createElement('button');
                     btn.className = 'btn-option';
@@ -241,47 +257,70 @@
                     btn.onclick = () => {
                         if (btn.classList.contains('clicked')) return;
                         btn.classList.add('clicked');
-                        totalScore += (opt.type === 'M' ? 101 : opt.type === 'E' ? 100 : 1);
+                        totalWeight += (opt.type === 'M' ? 101 : opt.type === 'E' ? 100 : 1);
                         let delay = (lv1Idx === 0) ? (btn.innerText = `${opt.label}：${opt.desc}`, 2000) : 400;
                         setTimeout(() => { lv1Idx++; renderLv1(); }, delay);
                     };
-                    optionsContainer.appendChild(btn);
+                    optContainer.appendChild(btn);
                 });
             }
         }
 
-        // 拖曳排序邏輯
-        function addSortEvents(container) {
-            let draggingItem = null;
-            container.addEventListener('touchstart', e => {
-                draggingItem = e.target.closest('.sort-item');
-                draggingItem.classList.add('dragging');
-            }, {passive: true});
-            container.addEventListener('touchmove', e => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const afterElement = getDragAfterElement(container, touch.clientY);
-                if (afterElement == null) container.appendChild(draggingItem);
-                else container.insertBefore(draggingItem, afterElement);
-            }, {passive: false});
-            container.addEventListener('touchend', () => {
-                draggingItem.classList.remove('dragging');
+        // --- 拖曳排序 ---
+        function initSortGame(options) {
+            const pool = document.getElementById('drag-pool'); pool.innerHTML = '';
+            options.forEach((opt, index) => {
+                const item = document.createElement('div');
+                item.className = 'drag-item'; item.innerText = opt.text; item.dataset.type = opt.type; item.id = `drag-${index}`;
+                item.addEventListener('pointerdown', onPointerDown);
+                pool.appendChild(item);
+            });
+            document.querySelectorAll('.slot').forEach(s => s.innerHTML = '');
+            checkSortComplete();
+        }
+
+        let activeItem = null, startX, startY, originalParent;
+        function onPointerDown(e) {
+            activeItem = e.target; originalParent = activeItem.parentElement;
+            const rect = activeItem.getBoundingClientRect();
+            startX = e.clientX - rect.left; startY = e.clientY - rect.top;
+            activeItem.style.position = 'fixed'; activeItem.style.left = `${e.clientX - startX}px`; activeItem.style.top = `${e.clientY - startY}px`;
+            activeItem.setPointerCapture(e.pointerId);
+            activeItem.addEventListener('pointermove', onPointerMove);
+            activeItem.addEventListener('pointerup', onPointerUp);
+        }
+        function onPointerMove(e) {
+            if (!activeItem) return;
+            activeItem.style.left = `${e.clientX - startX}px`; activeItem.style.top = `${e.clientY - startY}px`;
+            document.querySelectorAll('.slot').forEach(s => {
+                const r = s.getBoundingClientRect();
+                if (e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom) s.classList.add('highlight');
+                else s.classList.remove('highlight');
             });
         }
-
-        function getDragAfterElement(container, y) {
-            const draggableElements = [...container.querySelectorAll('.sort-item:not(.dragging)')];
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                if (offset < 0 && offset > closest.offset) return { offset: offset, element: child };
-                else return closest;
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        function onPointerUp(e) {
+            if (!activeItem) return;
+            activeItem.removeEventListener('pointermove', onPointerMove); activeItem.removeEventListener('pointerup', onPointerUp);
+            let targetSlot = null;
+            document.querySelectorAll('.slot').forEach(s => {
+                s.classList.remove('highlight');
+                const r = s.getBoundingClientRect();
+                if (e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom) targetSlot = s;
+            });
+            if (targetSlot) {
+                if (targetSlot.children.length > 0) originalParent.appendChild(targetSlot.children[0]);
+                targetSlot.appendChild(activeItem);
+            } else { document.getElementById('drag-pool').appendChild(activeItem); }
+            activeItem.style.position = 'relative'; activeItem.style.left = '0'; activeWeight = '0'; activeItem = null;
+            checkSortComplete();
         }
-
+        function checkSortComplete() {
+            const filled = [...document.querySelectorAll('.slot')].every(s => s.children.length > 0);
+            const btn = document.getElementById('btn-sort-confirm'); btn.disabled = !filled; btn.style.opacity = filled ? '1' : '0.5';
+        }
         function confirmSort() {
-            const firstItemType = document.querySelector('.sort-item').dataset.type;
-            totalScore += (firstItemType === 'M' ? 101 : firstItemType === 'E' ? 100 : 1);
+            const firstType = document.getElementById('slot-1').children[0].dataset.type;
+            totalWeight += (firstType === 'M' ? 101 : firstType === 'E' ? 100 : 1);
             showScreen('screen-lv2-intro');
         }
 
@@ -297,21 +336,19 @@
                 document.getElementById('timer-fill-lv2').style.width = (timeLeft / 20 * 100) + '%';
             }, 100);
         }
-
         function updateLv2Puzzle() {
             if (lv2Idx < LV2_DATA.length) document.getElementById('current-puzzle').innerText = LV2_DATA[lv2Idx].text;
-            else { clearInterval(timerInterval); setTimeout(startLv3, 800); }
+            else { clearInterval(timerInterval); setTimeout(startLv3, 1000); }
         }
-
-        function checkMatch(category, el) {
+        function checkMatch(cat, el) {
             const fb = document.getElementById('lv2-feedback');
-            if (category === LV2_DATA[lv2Idx].category) {
+            if (cat === LV2_DATA[lv2Idx].cat) {
                 lv2Correct++; fb.innerText = "答對了！"; fb.className = "feedback correct";
                 el.classList.add('clicked');
                 setTimeout(() => { el.classList.add('hidden'); fb.innerText = ""; lv2Idx++; updateLv2Puzzle(); }, 500);
             } else {
                 fb.innerText = "再試一次！"; fb.className = "feedback wrong";
-                setTimeout(() => fb.innerText = "", 800);
+                setTimeout(() => fb.innerText = "", 1000);
             }
         }
 
@@ -320,34 +357,41 @@
         function renderLv3() {
             if (lv3Idx >= LV3_DATA.length) { showResult(); return; }
             const data = LV3_DATA[lv3Idx];
-            document.getElementById('quiz-question').innerText = data.question;
+            document.getElementById('quiz-question').innerText = data.q;
             const container = document.getElementById('lv3-options');
             container.innerHTML = '';
-            data.options.forEach(opt => {
+            data.opts.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = 'btn-option'; btn.innerText = opt.text;
+                btn.className = 'btn-option'; btn.innerText = opt.t;
                 btn.onclick = () => {
                     const fb = document.getElementById('lv3-feedback');
-                    if (opt.correct) { lv3Correct++; fb.innerText = "答對了！"; fb.className = "feedback correct"; }
-                    else { fb.innerText = `答案是：${data.correctAns}`; fb.className = "feedback wrong"; }
-                    setTimeout(() => { fb.innerText = ""; lv3Idx++; renderLv3(); }, 1200);
+                    if (opt.c) { lv3Correct++; fb.innerText = "答對了！"; fb.className = "feedback correct"; }
+                    else { fb.innerText = `答錯囉，答案是：${data.ans}`; fb.className = "feedback wrong"; }
+                    setTimeout(() => { fb.innerText = ""; lv3Idx++; renderLv3(); }, 1500);
                 };
                 container.appendChild(btn);
             });
         }
 
-        // --- 結果判定 ---
+        // --- 結果 ---
         function showResult() {
             let role, tag, desc;
-            if (totalScore >= 303) { role = "纖維魔法師 (M)"; tag = "【材料創新人才】"; desc = "你對物質特性有卓越洞察力，擅長纖維抽絲與改質技術。你將引領材料革命，讓「醣經濟」取代石化塑膠。"; }
-            else if (totalScore >= 105) { role = "綠能鏈金術師 (E)"; tag = "【能源循環人才】"; desc = "你具備建構循環系統的宏觀思維，擅長木質素發電與綠能管控。你是達成碳中和目標的關鍵實踐家。"; }
-            else { role = "數位預言家 (D)"; tag = "【AI 與數據人才】"; desc = "你習慣用數據說話，擅長透過數據模型洞察規律。你是數位轉型的關鍵，讓生產精準且智慧。"; }
-            
+            if (totalWeight >= 303) {
+                role = "纖維魔法師 (M)"; tag = "【材料創新人才】";
+                desc = "你對物質特性有卓越洞察力。";
+            } else if (totalWeight >= 105) {
+                role = "綠能鏈金術師 (E)"; tag = "【能源循環人才】";
+                desc = "你具備建構循環系統的宏觀思維。";
+            } else {
+                role = "數位預言家 (D)"; tag = "【AI 與數據人才】";
+                desc = "你習慣用數據說話，擅長透過數據模型洞察規律。";
+            }
             document.getElementById('role-name').innerText = role;
             document.getElementById('role-tag').innerText = tag;
             document.getElementById('role-desc').innerText = desc;
-            document.getElementById('res-lv2').innerText = `${lv2Correct} / 5`;
-            document.getElementById('res-lv3').innerText = `${lv3Correct} / 2`;
+            
+            // 合併分數顯示 (拼圖5題 + 快問快答2題 = 共7題)
+            document.getElementById('combined-score').innerText = `${lv2Correct + lv3Correct} / 7`;
             showScreen('screen-result');
         }
 
