@@ -89,7 +89,7 @@
             display: flex; align-items: center; justify-content: center;
             position: relative; overflow: hidden; transition: 0.3s;
         }
-        .slot::before { content: "RANK"; position: absolute; left: 15px; font-size: 0.7rem; color: #ff9ec8; font-weight: bold; z-index: 1; }
+        .slot::before { content: "排序"; position: absolute; left: 15px; font-size: 0.7rem; color: #ff9ec8; font-weight: bold; z-index: 1; }
         .slot.highlight { border-color: var(--yfy-pink); background: white; }
         
         /* 當方塊進入 slot 時的填滿效果 */
@@ -140,13 +140,13 @@
             <img src="yfylogo.jpg" class="logo-img" onerror="this.style.display='none'">
             <div class="card">
                 <h1>紙屬於你的挑戰賽 🚀</h1>
-                <p>探索永豐餘的五大循環<br>完成挑戰，發掘你的永續職能潛力！</p>
+                <p>探索永豐餘的五大循環<br>發掘你的永續職能潛力！</p>
                 <br>
                 <button class="btn-main" onclick="startLv1()">開始挑戰</button>
             </div>
         </div>
 
-        <!-- 第一關：職能基因 -->
+        <!-- 第一關：永續職能 -->
         <div id="screen-lv1" class="level-screen">
             <div class="card">
                 <div class="progress-bar"><div id="lv1-progress-fill" class="progress-fill"></div></div>
@@ -217,13 +217,13 @@
         <!-- 結果頁 -->
         <div id="screen-result" class="level-screen">
             <div class="card">
-                <p>檢測完成！你是...</p>
+                <p>闖關完成💨你是!!!</p>
                 <div id="role-name" style="font-size:2rem; font-weight:900; color:var(--yfy-pink); margin:10px 0;"></div>
                 <div id="role-tag" style="background:var(--energy-red); color:white; display:inline-block; padding:5px 15px; border-radius:10px; font-size:0.9rem;"></div>
                 <div id="role-desc" style="text-align:left; font-size:0.9rem; background:white; padding:18px; border-radius:20px; margin:20px 0; line-height:1.6;"></div>
                 
                 <div class="score-box">
-                    <div style="font-size:0.9rem; color:#666;">挑戰總積分 (5大循環+快問快答)</div>
+                    <div style="font-size:0.9rem; color:#666;">挑戰總分🔥</div>
                     <div class="score-num"><span id="combined-score">0</span><span style="font-size:1rem; color:#999;"> / 7</span></div>
                 </div>
                 <button class="btn-main" onclick="window.location.href='https://www.surveycake.com/s/OYYdG'">填問卷領好禮🎁</button>
@@ -235,9 +235,9 @@
         const LV1_DATA = [
             { q: "最想投入的永續領域？", options: [{ label: "纖維研發", desc: "在永豐餘研發纖維抽絲與改質技術。讓天然纖維取代石化產品，開啟綠色材料新篇章！", type: "M" }, { label: "綠電開發", desc: "致力於將生產過程中的餘料轉化為循環電力。從沼氣發電到木質素發電，讓資源發揮最大能量！", type: "E" }, { label: "智慧管理", desc: "利用 AI 與大數據極大化效率！在智慧工廠中精準掌控產能與品質，實現零浪費目標。", type: "D" }] },
             { q: "面對大自然豐富資源，首選方向？", options: [{ t: "強化纖維韌性，研發抽絲技術", type: "M" }, { t: "提煉木質素生質發電，增加效能", type: "E" }, { t: "建立數據模型，優化生產製程", type: "D" }] },
-            { q: "看到剩餘「餘料」時，最想展現？", options: [{ t: "物質重組：研發新型環保纖維", type: "M" }, { t: "能量轉化：轉為綠電補給能源", type: "E" }, { t: "AI領航：數據預測，達成零浪費", type: "D" }] },
+            { q: "看到剩餘的餘料時，最想展現？", options: [{ t: "物質重組：研發新型環保纖維", type: "M" }, { t: "能量轉化：轉為綠電補給能源", type: "E" }, { t: "AI領航：數據預測，達成零浪費", type: "D" }] },
             { q: "最想加入智慧工廠哪個單位？", options: [{ t: "研發中心：研發生化精進技術", type: "M" }, { t: "綠電中心：管控綠色發電系統", type: "E" }, { t: "數據中心：機器學習預測產能", type: "D" }] },
-            { q: "人才特質重要性排序 (請拖曳填滿框格)", isSort: true, options: [{ t: "研發力", type: "M" }, { t: "整合力", type: "E" }, { t: "分析力", type: "D" }] }
+            { q: "人才特質排序(最上方最重要)", isSort: true, options: [{ t: "物質材料研發力", type: "M" }, { t: "建構系統整合力", type: "E" }, { t: "數據洞察分析力", type: "D" }] }
         ];
 
         const LV2_DATA = [{ text: "秸稈資源全利用技術", cat: "農廢循環" }, { text: "廢水重複利用率達90%以上", cat: "水循環" }, { text: "97%原料為回收紙", cat: "紙的再生循環" }, { text: "沼氣發電", cat: "生質能循環" }, { text: "醣經濟與碳管理", cat: "碳循環" }];
