@@ -6,23 +6,22 @@
     <title>紙屬於你的挑戰賽</title>
     <style>
         :root {
-            --yfy-pink: #EC008C;      /* 核心粉色 */
-            --light-pink: #F27FB2;    /* 點擊後淺粉色 */
-            --energy-red: #e30505;    /* 選項使用的紅色 */
-            --deep-red: #8B0000;      /* 點擊後的深紅 */
-            --charcoal: #121212;
-            --light-gray: #F5F5F5;
-            --tech-gray: #CCCCCC;
+            --yfy-pink: #EC008C;
+            --yfy-light-pink: #fff0f6;
+            --energy-red: #e30505;
+            --deep-red: #8B0000;
+            --soft-bg: #fdfcfd;
+            --charcoal: #333333;
             --white: #FFFFFF;
         }
 
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            font-family: 'Segoe UI', "Microsoft JhengHei", Roboto, sans-serif;
-            background-color: var(--white);
+            font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif;
+            background: var(--soft-bg);
             color: var(--charcoal);
-            overflow: hidden; 
+            overflow: hidden;
             user-select: none;
             touch-action: none;
         }
@@ -31,88 +30,97 @@
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             height: 100vh; width: 100vw;
-            text-align: center;
-            padding: 10px; box-sizing: border-box;
+            padding: 20px; box-sizing: border-box;
+            background: radial-gradient(circle at top right, #fff5f9, transparent);
         }
 
-        .logo-img { max-width: 140px; margin-bottom: 5px; }
-        .info-img { max-width: 90%; max-height: 40vh; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* 卡片設計 */
+        .card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(236, 0, 140, 0.08);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid rgba(236, 0, 140, 0.1);
+        }
 
-        h1 { color: var(--yfy-pink); margin-bottom: 5px; font-size: 1.4rem; }
-        h2 { color: var(--charcoal); font-size: 1.1rem; margin-bottom: 10px; line-height: 1.3; }
-        
-        .progress-text { font-size: 0.8rem; color: #666; margin-bottom: 5px; }
+        .logo-img { max-width: 130px; margin-bottom: 15px; }
+
+        h1 { color: var(--yfy-pink); font-size: 1.6rem; margin: 10px 0; font-weight: 800; }
+        p { line-height: 1.6; color: #666; font-size: 1rem; }
 
         .btn-main {
-            background: linear-gradient(45deg, var(--deep-red), var(--energy-red));
+            background: linear-gradient(135deg, var(--energy-red), var(--yfy-pink));
             color: white; border: none;
-            padding: 12px 35px; font-size: 1rem; font-weight: bold;
+            padding: 14px 40px; font-size: 1.1rem; font-weight: bold;
             border-radius: 50px; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(255,0,0,0.3);
-            margin-top: 10px;
+            box-shadow: 0 6px 15px rgba(227, 5, 5, 0.3);
+            transition: all 0.2s;
         }
+        .btn-main:active { transform: scale(0.95); }
 
         .btn-option {
-            background-color: var(--energy-red);
-            color: white; border: none;
-            padding: 15px 20px; font-size: 0.95rem; font-weight: 500;
-            border-radius: 12px; cursor: pointer;
-            width: 100%; margin-bottom: 10px;
-            text-align: left; line-height: 1.4;
+            background-color: var(--white);
+            color: var(--charcoal);
+            border: 2px solid #eee;
+            padding: 16px 20px; font-size: 1rem; font-weight: 600;
+            border-radius: 16px; cursor: pointer;
+            width: 100%; margin-bottom: 12px;
+            text-align: left; transition: all 0.2s;
+            box-shadow: 0 4px 0 #eee;
         }
-        .btn-option.clicked { background-color: var(--deep-red) !important; }
+        .btn-option:active { transform: translateY(2px); box-shadow: 0 2px 0 #eee; }
+        .btn-option.selected {
+            background: var(--energy-red);
+            color: white; border-color: var(--deep-red);
+            box-shadow: 0 4px 0 var(--deep-red);
+        }
 
-        /* --- 排序題專用樣式 --- */
-        .sort-instruction { font-size: 0.85rem; color: var(--yfy-pink); margin-bottom: 15px; }
-        .drag-pool { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; width: 100%; }
+        /* Q1 特殊說明視窗 */
+        #q1-modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.6);
+            z-index: 100; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: white; width: 85%; max-width: 350px;
+            padding: 30px; border-radius: 24px; text-align: center;
+            animation: popIn 0.3s cubic-bezier(0.17, 0.89, 0.32, 1.49);
+        }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* 拖曳排序區 */
+        .drag-pool { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
         .drag-item {
-            background: var(--energy-red); color: white;
-            width: 90px; height: 90px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--yfy-pink), #ff69b4);
+            color: white; width: 85px; height: 85px; border-radius: 18px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.8rem; font-weight: bold; padding: 5px;
-            cursor: grab; touch-action: none; text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: relative; z-index: 10;
+            font-size: 0.9rem; font-weight: bold; cursor: grab;
+            box-shadow: 0 4px 10px rgba(236, 0, 140, 0.3);
         }
-        .drop-zones-container { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; }
+        .drop-zones-container { display: flex; flex-direction: column; gap: 12px; width: 100%; align-items: center; }
         .slot {
-            height: 60px; border: 2px dashed var(--tech-gray);
-            border-radius: 10px; background: var(--light-gray);
-            display: flex; align-items: center; justify-content: center;
-            position: relative; transition: 0.2s;
+            width: 100%; max-width: 280px; height: 65px; border: 2px dashed #ddd;
+            border-radius: 16px; background: #fafafa; display: flex;
+            align-items: center; justify-content: center; position: relative;
         }
-        .slot::before {
-            content: attr(data-rank); position: absolute; left: 10px;
-            font-size: 1.5rem; font-weight: 900; color: rgba(0,0,0,0.1);
-        }
-        .slot.highlight { border-color: var(--yfy-pink); background: #fff1f9; }
-        .slot .drag-item { width: 95%; height: 80%; cursor: pointer; }
+        .slot::before { content: "RANK"; position: absolute; left: 15px; font-size: 0.7rem; color: #ccc; font-weight: bold; }
+        .slot.highlight { border-color: var(--yfy-pink); background: var(--yfy-light-pink); }
 
-        /* 第二關拼圖樣式 */
-        .puzzle-piece { background: var(--yfy-pink); color: white; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 1rem; width: 85%; margin-bottom: 15px; }
-        .drop-targets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 380px; }
-        .target-box { border: 2px solid var(--tech-gray); background: var(--light-gray); border-radius: 10px; padding: 10px 5px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
-        .target-box.clicked { background-color: var(--energy-red); color: white; }
-        .target-box.hidden { visibility: hidden; }
+        /* 進度與計時 */
+        .progress-bar { width: 100%; height: 8px; background: #eee; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--yfy-pink); transition: width 0.3s; }
+        .timer-fill { height: 100%; background: var(--energy-red); transition: width 0.1s linear; }
 
-        .timer-bar-bg { width: 85%; height: 8px; background: #EEE; border-radius: 6px; margin-bottom: 15px; overflow: hidden; }
-        .timer-fill { width: 100%; height: 100%; background: var(--yfy-pink); transition: width 0.1s linear; }
-        .feedback { font-size: 1rem; font-weight: bold; margin-top: 5px; height: 1.2rem; }
-        .correct { color: #28a745; }
-        .wrong { color: var(--energy-red); }
-
-        .level-screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; animation: fadeIn 0.4s ease-out; box-sizing: border-box; }
+        .level-screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
         .active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 結果頁樣式 */
-        .result-role { font-size: 1.8rem; color: var(--yfy-pink); font-weight: 900; margin: 5px 0; }
-        .result-tag { background: var(--yfy-pink); color: white; padding: 5px 15px; border-radius: 5px; font-size: 0.9rem; margin-bottom: 10px; }
-        .result-desc { text-align: left; background: var(--light-gray); padding: 15px; border-radius: 15px; font-size: 0.85rem; line-height: 1.5; width: 85%; margin-bottom: 15px; }
-        .score-summary { width: 85%; background: var(--white); border: 2px dashed var(--yfy-pink); border-radius: 15px; padding: 15px; margin-bottom: 15px; }
-        .score-item { display: flex; flex-direction: column; }
-        .score-label { font-size: 0.9rem; color: #666; margin-bottom: 5px; }
-        .score-val { font-size: 1.8rem; font-weight: bold; color: var(--energy-red); }
+        /* 結果頁 */
+        .score-box { background: var(--yfy-light-pink); padding: 20px; border-radius: 20px; margin: 20px 0; border: 2px solid var(--yfy-pink); }
+        .score-num { font-size: 2.5rem; font-weight: 900; color: var(--energy-red); }
     </style>
 </head>
 <body>
@@ -120,113 +128,116 @@
     <div id="game-container">
         <!-- 進入頁 -->
         <div id="screen-start" class="level-screen active">
-            <img src="yfylogo.jpg" alt="永豐餘Logo" class="logo-img" onerror="this.style.display='none'">
-            <h1>紙屬於你的挑戰賽</h1>
-            <p>啟動循環經濟<br>探索你的永續職能角色</p>
-            <br>
-            <button class="btn-main" onclick="startLv1()">[ 開始挑戰 ]</button>
+            <img src="yfylogo.jpg" class="logo-img" onerror="this.style.display='none'">
+            <div class="card">
+                <h1>紙屬於你的挑戰賽 🚀</h1>
+                <p>準備好啟動循環經濟大腦了嗎？<br>完成三道關卡，發掘你的永續基因！</p>
+                <br>
+                <button class="btn-main" onclick="startLv1()">立即啟動</button>
+            </div>
         </div>
 
-        <!-- 第一關：職能基因檢測 -->
+        <!-- 第一關：職能基因 -->
         <div id="screen-lv1" class="level-screen">
-            <div class="progress-text" id="lv1-progress">Q1 / 5</div>
-            <h2 id="lv1-question">題目載入中...</h2>
-            <div class="choice-container" id="lv1-options" style="width: 100%; max-width: 400px;"></div>
+            <div class="card">
+                <div class="progress-bar"><div id="lv1-progress-fill" class="progress-fill"></div></div>
+                <h2 id="lv1-question">載入中...</h2>
+                <div id="lv1-options"></div>
 
-            <!-- Q5 拖曳排序容器 -->
-            <div id="sort-ui" style="display:none; width: 100%; flex-direction: column; align-items: center;">
-                <p class="sort-instruction">請將上方方塊拖入下方框框進行 1-3 排序</p>
-                <div class="drag-pool" id="drag-pool"></div>
-                <div class="drop-zones-container">
-                    <div class="slot" data-rank="1" id="slot-1"></div>
-                    <div class="slot" data-rank="2" id="slot-2"></div>
-                    <div class="slot" data-rank="3" id="slot-3"></div>
+                <!-- Q5 排序 -->
+                <div id="sort-ui" style="display:none;">
+                    <div class="drag-pool" id="drag-pool"></div>
+                    <div class="drop-zones-container">
+                        <div class="slot" data-rank="1" id="slot-1"></div>
+                        <div class="slot" data-rank="2" id="slot-2"></div>
+                        <div class="slot" data-rank="3" id="slot-3"></div>
+                    </div>
+                    <button class="btn-main" id="btn-sort-confirm" style="margin-top:20px; opacity:0.5;" disabled onclick="confirmSort()">確認排序</button>
                 </div>
-                <button class="btn-main" id="btn-sort-confirm" style="margin-top:20px; opacity: 0.5;" disabled onclick="confirmSort()">[ 確認排序 ]</button>
             </div>
         </div>
 
-        <!-- 第二關前導頁 -->
+        <!-- Q1 專用說明彈窗 -->
+        <div id="q1-modal">
+            <div class="modal-content">
+                <h3 id="modal-title" style="color: var(--yfy-pink); margin-top:0;"></h3>
+                <p id="modal-desc"></p>
+                <br>
+                <button class="btn-main" onclick="closeQ1Modal()">了解！進入下一題</button>
+            </div>
+        </div>
+
+        <!-- 第二關前導 -->
         <div id="screen-lv2-intro" class="level-screen">
-            <h2>認識永豐餘五大循環</h2>
-            <img src="5cycle.jpg" alt="五大循環圖" class="info-img" onerror="this.style.display='none'">
-            <button class="btn-main" onclick="startLv2()">[ 準備好了 ]</button>
+            <div class="card">
+                <h2>🌈 永豐餘五大循環</h2>
+                <img src="5cycle.jpg" style="width:100%; border-radius:15px;" onerror="this.style.display='none'">
+                <p>仔細觀察循環關係，下一關要考考你的記憶力與反應力！</p>
+                <button class="btn-main" onclick="startLv2()">我準備好了</button>
+            </div>
         </div>
 
-        <!-- 第二關：消消樂拼圖 -->
+        <!-- 第二關：拼圖 -->
         <div id="screen-lv2" class="level-screen">
-            <h2>第二關：五大循環挑戰</h2>
-            <div class="score-board">剩餘時間: <span id="lv2-timer">20</span>s</div>
-            <div class="timer-bar-bg"><div id="timer-fill-lv2" class="timer-fill"></div></div>
-            <div id="current-puzzle" class="puzzle-piece">載入中...</div>
-            <div class="drop-targets" id="lv2-answer-zone">
-                <div class="target-box" onclick="checkMatch('農廢循環', this)">農廢循環</div>
-                <div class="target-box" onclick="checkMatch('水循環', this)">水循環</div>
-                <div class="target-box" onclick="checkMatch('紙的再生循環', this)">紙的再生循環</div>
-                <div class="target-box" onclick="checkMatch('生質能循環', this)">生質能循環</div>
-                <div class="target-box" onclick="checkMatch('碳循環', this)">碳循環</div>
+            <div class="card">
+                <div class="progress-bar"><div id="timer-fill-lv2" class="timer-fill" style="width:100%"></div></div>
+                <div style="font-weight:bold; color:var(--yfy-pink); margin-bottom:10px;">⏰ 剩餘時間: <span id="lv2-timer">20</span>s</div>
+                <div id="current-puzzle" style="background:var(--yfy-pink); color:white; padding:15px; border-radius:12px; font-weight:bold; margin-bottom:20px;"></div>
+                <div class="drop-targets" id="lv2-answer-zone" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div class="target-box btn-option" style="text-align:center;" onclick="checkMatch('農廢循環', this)">農廢循環</div>
+                    <div class="target-box btn-option" style="text-align:center;" onclick="checkMatch('水循環', this)">水循環</div>
+                    <div class="target-box btn-option" style="text-align:center;" onclick="checkMatch('紙的再生循環', this)">紙的再生循環</div>
+                    <div class="target-box btn-option" style="text-align:center;" onclick="checkMatch('生質能循環', this)">生質能循環</div>
+                    <div class="target-box btn-option" style="text-align:center;" onclick="checkMatch('碳循環', this)">碳循環</div>
+                </div>
+                <div id="lv2-feedback" style="height:20px; margin-top:10px; font-weight:bold;"></div>
             </div>
-            <div id="lv2-feedback" class="feedback"></div>
         </div>
 
         <!-- 第三關：快問快答 -->
         <div id="screen-lv3" class="level-screen">
-            <h2>第三關：永續快問快答</h2>
-            <div id="quiz-question" style="font-size:1rem; font-weight:bold; background:#f5f5f5; padding:15px; border-radius:15px; width:85%; margin-bottom:15px;">載入中...</div>
-            <div class="choice-container" id="lv3-options" style="width: 100%; max-width: 400px; display: flex; flex-direction: column;"></div>
-            <div id="lv3-feedback" class="feedback"></div>
+            <div class="card">
+                <h2>⚡ 永續快問快答</h2>
+                <div id="quiz-question" style="background:#f9f9f9; padding:15px; border-radius:15px; margin-bottom:20px; font-weight:bold;"></div>
+                <div id="lv3-options"></div>
+                <div id="lv3-feedback" style="height:20px; margin-top:10px; font-weight:bold;"></div>
+            </div>
         </div>
 
-        <!-- 結束頁 -->
+        <!-- 結果頁 -->
         <div id="screen-result" class="level-screen">
-            <div id="role-name" class="result-role">角色名稱</div>
-            <div id="role-tag" class="result-tag">【人才類別】</div>
-            <div id="role-desc" class="result-desc">描述載入中...</div>
-            
-            <div class="score-summary">
-                <div class="score-item">
-                    <span class="score-label">遊戲挑戰總分 (拼圖+快問快答)</span>
-                    <span class="score-val" id="combined-score">0 / 7</span>
+            <div class="card">
+                <p>你的職能基因角色是...</p>
+                <div id="role-name" style="font-size:2rem; font-weight:900; color:var(--yfy-pink); margin:10px 0;"></div>
+                <div id="role-tag" style="background:var(--energy-red); color:white; display:inline-block; padding:4px 15px; border-radius:8px; font-size:0.9rem;"></div>
+                <div id="role-desc" style="text-align:left; font-size:0.9rem; background:#f5f5f5; padding:15px; border-radius:15px; margin:20px 0; line-height:1.6;"></div>
+                
+                <div class="score-box">
+                    <div style="font-size:0.9rem; color:#666;">遊戲挑戰總得分</div>
+                    <div class="score-num"><span id="combined-score">0</span><span style="font-size:1rem; color:#999;"> / 7</span></div>
                 </div>
+                <button class="btn-main" onclick="window.location.href='https://www.surveycake.com/s/OYYdG'">領取禮物 🎁</button>
             </div>
-            <button class="btn-main" onclick="goToSurvey()">[ 填寫問卷領取好禮 ]</button>
         </div>
     </div>
 
     <script>
         const LV1_DATA = [
-            { q: "最想投入的永續領域？", options: [{ label: "纖維研發", desc: "在永豐餘研發纖維抽絲的專業技術", type: "M" }, { label: "綠電開發", desc: "在永豐餘可以將餘料轉為循環電力", type: "E" }, { label: "智慧管理", desc: "在永豐餘可以用AI管理極大化資源效率", type: "D" }] },
-            { q: "在面對大自然豐富資源，請問你首選的方向？", options: [{ text: "強化纖維韌性，研發抽絲技術", type: "M" }, { text: "提煉木質素進行生質發電，增加效能", type: "E" }, { text: "建立產能預測數據模型，優化製程", type: "D" }] },
-            { q: "當你看到生產剩下的「餘料」時，最想展現哪種超能力？", options: [{ text: "物質重組：研發成更永續的環保纖維", type: "M" }, { text: "能量轉化：轉為綠電，幫城市補給能源", type: "E" }, { text: "AI領航：用數據預測規律，達成零浪費", type: "D" }] },
-            { q: "最想加入智慧工廠哪個單位？", options: [{ text: "研發中心：研發生物化學並精進技術", type: "M" }, { text: "綠電中心：高效管控綠色發電系統", type: "E" }, { text: "數據中心：用機器學習預測產能", type: "D" }] },
-            { q: "你認為人才最重要的特質排序？", isSort: true, options: [{ text: "研發力", type: "M" }, { text: "整合力", type: "E" }, { text: "分析力", type: "D" }] }
+            { q: "最想投入的永續領域？", options: [{ label: "纖維研發", desc: "在永豐餘，我們不僅是在造紙，更是研發「醣經濟」的先鋒。透過專業的纖維抽絲與改質技術，讓天然纖維取代石化產品！", type: "M" }, { label: "綠電開發", desc: "永豐餘致力於將生產過程中的剩餘材料轉化為循環電力。從沼氣發電到木質素發電，讓每一份資源都轉化為推動城市的能量！", type: "E" }, { label: "智慧管理", desc: "利用 AI 與大數據極大化資源效率！在智慧工廠中，透過數據監測精準掌握產能與品質，實現零浪費的永續經營目標。", type: "D" }] },
+            { q: "面對大自然的豐富資源，首選方向？", options: [{ t: "強化纖維韌性，研發抽絲技術", type: "M" }, { t: "提煉木質素生質發電，增加效能", type: "E" }, { t: "建立數據模型，優化生產製程", type: "D" }] },
+            { q: "看到剩餘「餘料」時，想展現？", options: [{ t: "物質重組：研發新型環保纖維", type: "M" }, { t: "能量轉化：轉為綠電補給能源", type: "E" }, { t: "AI領航：數據預測，達成零浪費", type: "D" }] },
+            { q: "最想加入智慧工廠哪個單位？", options: [{ t: "研發中心：研發生化精進技術", type: "M" }, { t: "綠電中心：管控綠色發電系統", type: "E" }, { t: "數據中心：機器學習預測產能", type: "D" }] },
+            { q: "認為人才最重要的特質排序？", isSort: true, options: [{ t: "研發力", type: "M" }, { t: "整合力", type: "E" }, { t: "分析力", type: "D" }] }
         ];
 
         const LV2_DATA = [{ text: "秸稈資源全利用技術", cat: "農廢循環" }, { text: "廢水重複利用率達90%以上", cat: "水循環" }, { text: "97%原料為回收紙", cat: "紙的再生循環" }, { text: "沼氣發電", cat: "生質能循環" }, { text: "醣經濟與碳管理", cat: "碳循環" }];
         
         const LV3_DATA = [
-            { 
-                q: "永豐餘綠色發電，主要為以下何者？", 
-                opts: [
-                    { t: "沼氣發電", c: true }, 
-                    { t: "核能發電", c: false }, 
-                    { t: "風力發電", c: false }
-                ], 
-                ans: "沼氣發電" 
-            },
-            { 
-                q: "永續發展中，最重要的核心是什麼？", 
-                opts: [
-                    { t: "持續增加碳排放", c: false }, 
-                    { t: "企業快速成長獲利", c: false }, 
-                    { t: "循環經濟與社會責任", c: true }
-                ], 
-                ans: "循環經濟與社會責任" 
-            }
+            { q: "永豐餘綠色發電，主要為以下何者？", opts: [{ t: "沼氣發電", c: true }, { t: "核能發電", c: false }, { t: "風力發電", c: false }], ans: "沼氣發電" },
+            { q: "永續發展中，最重要的核心是什麼？", opts: [{ t: "持續增加碳排放", c: false }, { t: "企業快速成長獲利", c: false }, { t: "循環經濟與社會責任", c: true }], ans: "循環經濟與社會責任" }
         ];
 
-        let totalWeight = 0, lv1Idx = 0, lv2Idx = 0, lv3Idx = 0;
-        let lv2Correct = 0, lv3Correct = 0;
+        let weightScore = 0, lv1Idx = 0, lv2Idx = 0, lv3Idx = 0, gameScore = 0;
         let timerInterval;
 
         function showScreen(id) {
@@ -235,43 +246,51 @@
         }
 
         // --- 第一關 ---
-        function startLv1() { lv1Idx = 0; totalWeight = 0; showScreen('screen-lv1'); renderLv1(); }
+        function startLv1() { lv1Idx = 0; weightScore = 0; showScreen('screen-lv1'); renderLv1(); }
 
         function renderLv1() {
             const data = LV1_DATA[lv1Idx];
-            document.getElementById('lv1-progress').innerText = `Q${lv1Idx + 1} / 5`;
+            document.getElementById('lv1-progress-fill').style.width = ((lv1Idx+1)/5 * 100) + '%';
             document.getElementById('lv1-question').innerText = data.q;
-            const optContainer = document.getElementById('lv1-options');
+            const container = document.getElementById('lv1-options');
             const sortUI = document.getElementById('sort-ui');
-
+            
             if (data.isSort) {
-                optContainer.style.display = 'none'; sortUI.style.display = 'flex';
+                container.style.display = 'none'; sortUI.style.display = 'block';
                 initSortGame(data.options);
             } else {
-                optContainer.style.display = 'block'; sortUI.style.display = 'none';
-                optContainer.innerHTML = '';
+                container.style.display = 'block'; sortUI.style.display = 'none';
+                container.innerHTML = '';
                 data.options.forEach(opt => {
                     const btn = document.createElement('button');
                     btn.className = 'btn-option';
-                    btn.innerText = (lv1Idx === 0) ? opt.label : opt.text;
+                    btn.innerText = (lv1Idx === 0) ? `🌱 ${opt.label}` : `🔸 ${opt.t}`;
                     btn.onclick = () => {
-                        if (btn.classList.contains('clicked')) return;
-                        btn.classList.add('clicked');
-                        totalWeight += (opt.type === 'M' ? 101 : opt.type === 'E' ? 100 : 1);
-                        let delay = (lv1Idx === 0) ? (btn.innerText = `${opt.label}：${opt.desc}`, 2000) : 400;
-                        setTimeout(() => { lv1Idx++; renderLv1(); }, delay);
+                        weightScore += (opt.type === 'M' ? 101 : opt.type === 'E' ? 100 : 1);
+                        if (lv1Idx === 0) {
+                            document.getElementById('modal-title').innerText = opt.label;
+                            document.getElementById('modal-desc').innerText = opt.desc;
+                            document.getElementById('q1-modal').style.display = 'flex';
+                        } else {
+                            lv1Idx++; renderLv1();
+                        }
                     };
-                    optContainer.appendChild(btn);
+                    container.appendChild(btn);
                 });
             }
         }
 
-        // --- 拖曳排序 ---
+        function closeQ1Modal() {
+            document.getElementById('q1-modal').style.display = 'none';
+            lv1Idx++; renderLv1();
+        }
+
+        // --- 排序題邏輯 ---
         function initSortGame(options) {
             const pool = document.getElementById('drag-pool'); pool.innerHTML = '';
             options.forEach((opt, index) => {
                 const item = document.createElement('div');
-                item.className = 'drag-item'; item.innerText = opt.text; item.dataset.type = opt.type; item.id = `drag-${index}`;
+                item.className = 'drag-item'; item.innerText = opt.t; item.dataset.type = opt.type;
                 item.addEventListener('pointerdown', onPointerDown);
                 pool.appendChild(item);
             });
@@ -284,8 +303,7 @@
             activeItem = e.target; originalParent = activeItem.parentElement;
             const rect = activeItem.getBoundingClientRect();
             startX = e.clientX - rect.left; startY = e.clientY - rect.top;
-            activeItem.style.position = 'fixed'; activeItem.style.left = `${e.clientX - startX}px`; activeItem.style.top = `${e.clientY - startY}px`;
-            activeItem.setPointerCapture(e.pointerId);
+            activeItem.style.position = 'fixed'; activeItem.setPointerCapture(e.pointerId);
             activeItem.addEventListener('pointermove', onPointerMove);
             activeItem.addEventListener('pointerup', onPointerUp);
         }
@@ -311,24 +329,23 @@
                 if (targetSlot.children.length > 0) originalParent.appendChild(targetSlot.children[0]);
                 targetSlot.appendChild(activeItem);
             } else { document.getElementById('drag-pool').appendChild(activeItem); }
-            activeItem.style.position = 'relative'; activeItem.style.left = '0'; activeWeight = '0'; activeItem = null;
+            activeItem.style.position = 'relative'; activeItem.style.left = '0'; activeItem.style.top = '0'; activeItem = null;
             checkSortComplete();
         }
         function checkSortComplete() {
             const filled = [...document.querySelectorAll('.slot')].every(s => s.children.length > 0);
-            const btn = document.getElementById('btn-sort-confirm'); btn.disabled = !filled; btn.style.opacity = filled ? '1' : '0.5';
+            const btn = document.getElementById('btn-sort-confirm');
+            btn.disabled = !filled; btn.style.opacity = filled ? '1' : '0.5';
         }
         function confirmSort() {
             const firstType = document.getElementById('slot-1').children[0].dataset.type;
-            totalWeight += (firstType === 'M' ? 101 : firstType === 'E' ? 100 : 1);
+            weightScore += (firstType === 'M' ? 101 : firstType === 'E' ? 100 : 1);
             showScreen('screen-lv2-intro');
         }
 
-        // --- 第二關 ---
+        // --- 第二、三關邏輯 ---
         function startLv2() {
-            showScreen('screen-lv2'); lv2Idx = 0; lv2Correct = 0;
-            let timeLeft = 20; updateLv2Puzzle();
-            clearInterval(timerInterval);
+            showScreen('screen-lv2'); lv2Idx = 0; let timeLeft = 20; updateLv2Puzzle();
             timerInterval = setInterval(() => {
                 timeLeft -= 0.1;
                 if (timeLeft <= 0) { clearInterval(timerInterval); startLv3(); }
@@ -338,64 +355,57 @@
         }
         function updateLv2Puzzle() {
             if (lv2Idx < LV2_DATA.length) document.getElementById('current-puzzle').innerText = LV2_DATA[lv2Idx].text;
-            else { clearInterval(timerInterval); setTimeout(startLv3, 1000); }
+            else { clearInterval(timerInterval); setTimeout(startLv3, 800); }
         }
         function checkMatch(cat, el) {
             const fb = document.getElementById('lv2-feedback');
             if (cat === LV2_DATA[lv2Idx].cat) {
-                lv2Correct++; fb.innerText = "答對了！"; fb.className = "feedback correct";
-                el.classList.add('clicked');
-                setTimeout(() => { el.classList.add('hidden'); fb.innerText = ""; lv2Idx++; updateLv2Puzzle(); }, 500);
+                gameScore++; fb.innerText = "✨ 太棒了！"; fb.style.color = "#28a745";
+                el.style.opacity = "0"; el.style.pointerEvents = "none";
+                setTimeout(() => { fb.innerText = ""; lv2Idx++; updateLv2Puzzle(); }, 500);
             } else {
-                fb.innerText = "再試一次！"; fb.className = "feedback wrong";
-                setTimeout(() => fb.innerText = "", 1000);
+                fb.innerText = "❌ 再試一次"; fb.style.color = "var(--energy-red)";
+                setTimeout(() => fb.innerText = "", 800);
             }
         }
 
-        // --- 第三關 ---
-        function startLv3() { showScreen('screen-lv3'); lv3Idx = 0; lv3Correct = 0; renderLv3(); }
+        function startLv3() { showScreen('screen-lv3'); lv3Idx = 0; renderLv3(); }
         function renderLv3() {
             if (lv3Idx >= LV3_DATA.length) { showResult(); return; }
             const data = LV3_DATA[lv3Idx];
             document.getElementById('quiz-question').innerText = data.q;
-            const container = document.getElementById('lv3-options');
-            container.innerHTML = '';
+            const container = document.getElementById('lv3-options'); container.innerHTML = '';
             data.opts.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'btn-option'; btn.innerText = opt.t;
                 btn.onclick = () => {
                     const fb = document.getElementById('lv3-feedback');
-                    if (opt.c) { lv3Correct++; fb.innerText = "答對了！"; fb.className = "feedback correct"; }
-                    else { fb.innerText = `答錯囉，答案是：${data.ans}`; fb.className = "feedback wrong"; }
-                    setTimeout(() => { fb.innerText = ""; lv3Idx++; renderLv3(); }, 1500);
+                    if (opt.c) { gameScore++; fb.innerText = "✅ 正確！"; fb.style.color = "#28a745"; }
+                    else { fb.innerText = `⛔ 答案是：${data.ans}`; fb.style.color = "var(--energy-red)"; }
+                    setTimeout(() => { fb.innerText = ""; lv3Idx++; renderLv3(); }, 1200);
                 };
                 container.appendChild(btn);
             });
         }
 
-        // --- 結果 ---
         function showResult() {
             let role, tag, desc;
-            if (totalWeight >= 303) {
-                role = "纖維魔法師 (M)"; tag = "【材料創新人才】";
+            if (weightScore >= 303) {
+                role = "纖維魔法師 🧙‍♂️"; tag = "【材料創新人才】";
                 desc = "你對物質特性有卓越洞察力。";
-            } else if (totalWeight >= 105) {
-                role = "綠能鏈金術師 (E)"; tag = "【能源循環人才】";
+            } else if (weightScore >= 105) {
+                role = "綠能鏈金術師 ⚗️"; tag = "【能源循環人才】";
                 desc = "你具備建構循環系統的宏觀思維。";
             } else {
-                role = "數位預言家 (D)"; tag = "【AI 與數據人才】";
+                role = "數位預言家 🔮"; tag = "【AI 與數據人才】";
                 desc = "你習慣用數據說話，擅長透過數據模型洞察規律。";
             }
             document.getElementById('role-name').innerText = role;
             document.getElementById('role-tag').innerText = tag;
             document.getElementById('role-desc').innerText = desc;
-            
-            // 合併分數顯示 (拼圖5題 + 快問快答2題 = 共7題)
-            document.getElementById('combined-score').innerText = `${lv2Correct + lv3Correct} / 7`;
+            document.getElementById('combined-score').innerText = gameScore;
             showScreen('screen-result');
         }
-
-        function goToSurvey() { window.location.href = "https://www.surveycake.com/s/OYYdG"; }
     </script>
 </body>
 </html>
